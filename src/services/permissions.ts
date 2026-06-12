@@ -19,12 +19,39 @@ export function hasPermission(permission?: string): boolean {
   );
 }
 
+function normalizeModule(value: string): string {
+  return value
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-zA-Z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .toLowerCase();
+}
+
+export function hasPlanModule(module?: string): boolean {
+  if (!module) {
+    return true;
+  }
+
+  if (isMaster()) {
+    return true;
+  }
+
+  const modules = authState.user?.tenant?.plan?.modules ?? [];
+  const normalizedModule = normalizeModule(module);
+
+  return modules.some((item) => normalizeModule(item) === normalizedModule);
+}
+
 export function canAccessResource(resource: string): boolean {
   if (resource === 'permissions') {
     return isMaster();
   }
 
-  return hasPermission(resourceReadPermissions[resource]);
+  return (
+    hasPlanModule(resourcePlanModules[resource]) &&
+    hasPermission(resourceReadPermissions[resource])
+  );
 }
 
 export const resourceReadPermissions: Record<string, string> = {
@@ -34,4 +61,43 @@ export const resourceReadPermissions: Record<string, string> = {
   plans: 'plans.read',
   tenants: 'tenants.read',
   settings: 'settings.read',
+  services: 'services.read',
+  categories: 'categories.read',
+  products: 'products.read',
+  customers: 'customers.read',
+  budgets: 'budgets.read',
+  budgetItems: 'budget-items.read',
+  freelancers: 'freelancers.read',
+  suppliers: 'suppliers.read',
+  budgetStatuses: 'budget-statuses.read',
+  invoices: 'invoices.read',
+  emails: 'emails.read',
+  expenses: 'expenses.read',
+  entries: 'entries.read',
+  budgetTotals: 'budget-totals.read',
+  budgetFilters: 'budget-filters.read',
+};
+
+export const resourcePlanModules: Record<string, string | undefined> = {
+  users: 'users',
+  roles: 'roles',
+  permissions: undefined,
+  plans: undefined,
+  tenants: undefined,
+  settings: 'settings',
+  services: 'services',
+  categories: 'budget',
+  products: 'budget',
+  customers: 'budget',
+  budgets: 'budget',
+  budgetItems: 'budget',
+  freelancers: 'budget',
+  suppliers: 'budget',
+  budgetStatuses: 'budget',
+  invoices: 'budget',
+  emails: 'budget',
+  expenses: 'budget',
+  entries: 'budget',
+  budgetTotals: 'budget',
+  budgetFilters: 'budget',
 };

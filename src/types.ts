@@ -14,12 +14,26 @@ export type Role = {
 
 export type Plan = {
   id: number;
+  code?: string | null;
+  publicId?: string | null;
   name: string;
   slug: string;
   projectType: string;
   description?: string | null;
+  price?: string;
+  currency?: string;
+  billingPeriod?: string;
+  trialDays?: number;
+  maxUsers?: number | null;
+  maxProjects?: number | null;
+  maxStorageMb?: number | null;
+  features?: string[] | null;
   modules?: string[];
+  highlighted?: boolean;
   active: boolean;
+  isPublic?: boolean;
+  sortOrder?: number;
+  taxPercentage?: string;
 };
 
 export type Tenant = {
@@ -48,6 +62,7 @@ export type Setting = {
   id: number;
   tenantId: number;
   name?: string | null;
+  prefix?: string | null;
   logo?: string | null;
   logoIcon?: string | null;
   logoPrint?: string | null;

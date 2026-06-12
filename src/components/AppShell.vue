@@ -2,41 +2,17 @@
 import {
   Activity,
   Bell,
-  Building2,
-  Cog,
-  CreditCard,
-  KeyRound,
-  LayoutDashboard,
   LogOut,
   Menu,
   Search,
-  ShieldCheck,
   User,
-  UserRound,
-  UsersRound,
 } from '@lucide/vue';
 import { computed } from 'vue';
 import { useRouter } from 'vue-router';
-import { canAccessResource, hasPermission } from '../services/permissions';
 import { authState, clearSession } from '../stores/auth';
+import AppMenu from './AppMenu.vue';
 
 const router = useRouter();
-
-const navItems = [
-  { to: '/', label: 'Panel', icon: LayoutDashboard },
-  { to: '/users', label: 'Usuarios', icon: UsersRound, permission: 'users.read', resource: 'users' },
-  { to: '/roles', label: 'Roles', icon: ShieldCheck, permission: 'roles.read', resource: 'roles' },
-  { to: '/permissions', label: 'Permisos', icon: KeyRound, permission: 'permissions.read', resource: 'permissions' },
-  { to: '/plans', label: 'Planes', icon: CreditCard, permission: 'plans.read', resource: 'plans' },
-  { to: '/tenants', label: 'Empresas', icon: Building2, permission: 'tenants.read', resource: 'tenants' },
-  { to: '/settings', label: 'Configuración', icon: Cog, permission: 'settings.read', resource: 'settings' },
-];
-
-const visibleNavItems = computed(() =>
-  navItems.filter((item) =>
-    item.resource ? canAccessResource(item.resource) : hasPermission(item.permission),
-  ),
-);
 
 const initials = computed(() => {
   const source = authState.user?.name || authState.user?.username || 'MC';
@@ -68,13 +44,11 @@ function logout() {
         <div class="w-full flex items-center justify-end ms-auto md:justify-between gap-x-1 md:gap-x-3">
           <div class="hidden md:block">
             <div class="relative">
-              <div class="absolute inset-y-0 inset-s-0 flex items-center pointer-events-none z-20 ps-3.5">
-                <Search class="shrink-0 size-4 text-gray-400 dark:text-neutral-500" />
-              </div>
+              <Search class="pointer-events-none absolute left-3.5 top-1/2 z-20 size-4 -translate-y-1/2 text-gray-400 dark:text-neutral-500" />
               <input
                 type="text"
-                class="py-2 ps-10 pe-4 block w-72 bg-white dark:bg-neutral-800 border border-gray-200 dark:border-neutral-700 rounded-lg text-sm text-gray-800 dark:text-neutral-200 placeholder:text-gray-400 dark:placeholder:text-neutral-500 focus:outline-hidden focus:border-primary-600 focus:ring-primary-600 disabled:opacity-50 disabled:pointer-events-none"
-                placeholder="Buscar"
+                class="block h-10 w-72 pl-5 rounded-lg border border-gray-200 bg-white py-0 pl-12 pr-4 text-sm leading-10 text-gray-800 placeholder:text-gray-400 focus:border-primary-600 focus:outline-hidden focus:ring-primary-600 disabled:pointer-events-none disabled:opacity-50 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-200 dark:placeholder:text-neutral-500"
+                placeholder=""
               />
             </div>
           </div>
@@ -82,23 +56,12 @@ function logout() {
           <div class="flex flex-row items-center justify-end gap-1">
             <button
               type="button"
+              aria-label="Buscar"
               class="md:hidden size-9.5 relative inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-full border border-transparent text-gray-800 dark:text-neutral-200 hover:bg-gray-100 dark:hover:bg-neutral-700 focus:outline-hidden focus:bg-gray-100 dark:focus:bg-neutral-700 disabled:opacity-50 disabled:pointer-events-none"
             >
               <Search class="shrink-0 size-4" />
-              <span class="sr-only">Buscar</span>
             </button>
 
-            <button
-              type="button"
-              class="lg:hidden size-9.5 relative inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-full border border-transparent text-gray-800 dark:text-neutral-200 hover:bg-gray-100 dark:hover:bg-neutral-700 focus:outline-hidden focus:bg-gray-100 dark:focus:bg-neutral-700"
-              aria-haspopup="dialog"
-              aria-expanded="false"
-              aria-controls="hs-application-sidebar"
-              aria-label="Abrir navegación"
-              data-hs-overlay="#hs-application-sidebar"
-            >
-              <Menu class="shrink-0 size-4" />
-            </button>
 
             <button
               type="button"
@@ -201,43 +164,7 @@ function logout() {
       tabindex="-1"
       aria-label="Sidebar"
     >
-      <div class="relative flex flex-col h-full max-h-full">
-        <div class="px-6 pt-4 flex items-center">
-          <RouterLink class="flex-none rounded-xl text-xl inline-flex items-center gap-x-2 font-semibold focus:outline-hidden focus:opacity-80" to="/" aria-label="MiControl">
-            <span class="inline-flex size-9 items-center justify-center rounded-xl bg-primary-600 text-white font-black">M</span>
-            <span class="text-gray-900 dark:text-neutral-100">MiControl</span>
-          </RouterLink>
-        </div>
-
-        <div class="px-6 py-3">
-          <p class="text-xs text-gray-500 dark:text-neutral-400 truncate">
-            {{ authState.user?.tenant?.name || 'Admin' }}
-          </p>
-          <p class="text-sm font-medium text-gray-900 dark:text-neutral-100 truncate">
-            {{ authState.user?.name || authState.user?.username }}
-          </p>
-          <p class="text-xs text-primary-700 dark:text-primary-300 truncate">
-            {{ authState.user?.role?.name || 'sin rol' }}
-          </p>
-        </div>
-
-        <div class="h-full overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:rounded-none [&::-webkit-scrollbar-track]:bg-gray-100 dark:[&::-webkit-scrollbar-track]:bg-neutral-700 [&::-webkit-scrollbar-thumb]:bg-gray-300 dark:[&::-webkit-scrollbar-thumb]:bg-neutral-500">
-          <nav class="hs-accordion-group p-3 w-full flex flex-col flex-wrap" data-hs-accordion-always-open>
-            <ul class="flex flex-col space-y-1">
-              <li v-for="item in visibleNavItems" :key="item.to">
-                <RouterLink
-                  :to="item.to"
-                  class="w-full flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-gray-800 dark:text-neutral-200 rounded-lg hover:bg-gray-100 dark:hover:bg-neutral-700 focus:outline-hidden focus:bg-gray-100 dark:focus:bg-neutral-700"
-                  active-class="bg-gray-100 dark:bg-neutral-700"
-                >
-                  <component :is="item.icon" class="shrink-0 size-4" />
-                  {{ item.label }}
-                </RouterLink>
-              </li>
-            </ul>
-          </nav>
-        </div>
-      </div>
+      <AppMenu />
     </aside>
 
     <main class="w-full lg:ps-65">

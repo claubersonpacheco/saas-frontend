@@ -2,9 +2,9 @@
 import { ArrowLeft, Save } from '@lucide/vue';
 import { computed, onMounted, reactive, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import AppShell from '../components/AppShell.vue';
-import { apiRequest } from '../services/api';
-import type { Permission, Role } from '../types';
+import AppShell from '../../components/AppShell.vue';
+import { apiRequest } from '../../services/api';
+import type { Permission, Role } from '../../types';
 
 const route = useRoute();
 const router = useRouter();
@@ -97,54 +97,61 @@ onMounted(() => {
   <AppShell>
     <template #title>{{ title }}</template>
 
-    <section class="page-actions">
-      <RouterLink class="secondary-button" to="/roles">
-        <ArrowLeft :size="18" />
-        Volver
-      </RouterLink>
-    </section>
-
-    <section class="panel narrow">
-      <div class="panel-title">
+    <section class="form-card">
+      <div class="form-card-header">
         <h2>{{ title }}</h2>
+        <p>Configure el rol y seleccione los permisos disponibles para el acceso.</p>
       </div>
 
-      <form class="form-grid" @submit.prevent="save">
-        <label>
-          Nombre
-          <input v-model="form.name" :disabled="loadingRecord" required />
-        </label>
+      <form @submit.prevent="save">
+        <div class="form-row-grid">
+          <div class="form-label">
+            <label for="roleName">Nombre</label>
+          </div>
+          <div class="form-field">
+            <input id="roleName" v-model="form.name" :disabled="loadingRecord" required />
+          </div>
 
-        <label>
-          Descripción
-          <textarea v-model="form.description" :disabled="loadingRecord" />
-        </label>
+          <div class="form-label">
+            <label for="roleDescription">Descripción</label>
+          </div>
+          <div class="form-field">
+            <textarea id="roleDescription" v-model="form.description" :disabled="loadingRecord" />
+          </div>
 
-        <div class="form-section-title">
-          <h3>Permisos</h3>
-        </div>
-
-        <div class="check-grid">
-          <label v-for="permission in permissions" :key="permission.id" class="check-option">
-            <input
-              v-model="selectedPermissionIds"
-              type="checkbox"
-              :value="permission.id"
-              :disabled="loadingRecord || loadingPermissions"
-            />
-            <span>
-              <strong>{{ permission.name }}</strong>
-              <small>{{ permission.description || 'Sin descripción' }}</small>
-            </span>
-          </label>
+          <div class="form-label">
+            <span>Permisos</span>
+          </div>
+          <div class="form-field">
+            <div class="check-grid">
+              <label v-for="permission in permissions" :key="permission.id" class="check-option">
+                <input
+                  v-model="selectedPermissionIds"
+                  type="checkbox"
+                  :value="permission.id"
+                  :disabled="loadingRecord || loadingPermissions"
+                />
+                <span>
+                  <strong>{{ permission.name }}</strong>
+                  <small>{{ permission.description || 'Sin descripción' }}</small>
+                </span>
+              </label>
+            </div>
+          </div>
         </div>
 
         <p v-if="error" class="alert error">{{ error }}</p>
 
-        <button class="primary-button" type="submit" :disabled="loading || loadingRecord">
-          <Save :size="18" />
-          {{ loading ? 'Guardando...' : 'Guardar rol' }}
-        </button>
+        <div class="form-actions">
+          <RouterLink class="secondary-button" to="/roles">
+            <ArrowLeft :size="18" />
+            Volver
+          </RouterLink>
+          <button class="primary-button" type="submit" :disabled="loading || loadingRecord">
+            <Save :size="18" />
+            {{ loading ? 'Guardando...' : 'Guardar rol' }}
+          </button>
+        </div>
       </form>
     </section>
   </AppShell>

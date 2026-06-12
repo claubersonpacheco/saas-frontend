@@ -1,14 +1,15 @@
 <script setup lang="ts">
-import { KeyRound, LogIn } from '@lucide/vue';
+import { Eye, EyeOff, KeyRound, LogIn } from '@lucide/vue';
 import { reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { apiRequest } from '../services/api';
-import { setSession } from '../stores/auth';
-import type { User } from '../types';
+import { apiRequest } from '../../services/api';
+import { setSession } from '../../stores/auth';
+import type { User } from '../../types';
 
 const router = useRouter();
 const loading = ref(false);
 const error = ref('');
+const showPassword = ref(false);
 
 const form = reactive({
   identifier: '',
@@ -59,7 +60,24 @@ async function submit() {
 
         <label>
           Contraseña
-          <input v-model="form.password" type="password" autocomplete="current-password" required />
+          <span class="password-field">
+            <input
+              v-model="form.password"
+              :type="showPassword ? 'text' : 'password'"
+              autocomplete="current-password"
+              required
+            />
+            <button
+              type="button"
+              class="password-toggle"
+              :title="showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+              :aria-label="showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+              @click="showPassword = !showPassword"
+            >
+              <EyeOff v-if="showPassword" :size="18" />
+              <Eye v-else :size="18" />
+            </button>
+          </span>
         </label>
 
         <label>

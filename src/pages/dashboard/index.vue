@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { Activity, Building2, CreditCard, ShieldCheck, UsersRound } from '@lucide/vue';
+import { Activity, Building2, ClipboardList, CreditCard, ShieldCheck, UsersRound } from '@lucide/vue';
 import { computed, onMounted, ref } from 'vue';
-import AppShell from '../components/AppShell.vue';
-import { apiRequest } from '../services/api';
-import { hasPermission } from '../services/permissions';
+import AppShell from '../../components/AppShell.vue';
+import { apiRequest } from '../../services/api';
+import { hasPermission } from '../../services/permissions';
 
 const loading = ref(true);
 const counts = ref([
@@ -11,6 +11,7 @@ const counts = ref([
   { label: 'Roles', value: '-', icon: ShieldCheck, path: '/roles', resource: 'roles', permission: 'roles.read' },
   { label: 'Planes', value: '-', icon: CreditCard, path: '/plans', resource: 'plans', permission: 'plans.read' },
   { label: 'Empresas', value: '-', icon: Building2, path: '/tenants', resource: 'tenants', permission: 'tenants.read' },
+  { label: 'Servicios', value: '-', icon: ClipboardList, path: '/services', resource: 'services', permission: 'services.read' },
 ]);
 
 const visibleCounts = computed(() =>
@@ -45,7 +46,7 @@ onMounted(loadCounts);
 
 <template>
   <AppShell>
-    <template #title>Vista general</template>
+    <template #title>Bienvenido</template>
 
     <section class="metric-grid">
       <RouterLink v-for="item in visibleCounts" :key="item.label" class="metric-card" :to="item.path">
