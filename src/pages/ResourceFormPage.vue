@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ArrowLeft, Save, Search, X } from '@lucide/vue';
-import { computed, onMounted, reactive, ref } from 'vue';
+import { ArrowLeft, Save, Search, Upload, X } from '@lucide/vue';
+import { computed, onBeforeUnmount, onMounted, reactive, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import AppShell from '../components/AppShell.vue';
 import { apiRequest } from '../services/api';
@@ -33,6 +33,13 @@ const customerOptions = ref<Array<{ value: number; label: string }>>([]);
 const customerSearch = ref('');
 const customerModalOpen = ref(false);
 const activeSettingsTab = ref('identity');
+const selectedLogoFiles = reactive<Record<string, File | null>>({
+  logo: null,
+  logoIcon: null,
+  logoPrint: null,
+  logoWhite: null,
+});
+const selectedLogoPreviewUrls = reactive<Record<string, string>>({});
 
 const config = computed(() => resources[props.resourceKey]);
 const recordId = computed(() => String(route.params.id || ''));
@@ -46,18 +53,6 @@ const settingsTabs = [
     key: 'identity',
     label: 'Identidad',
     fields: ['name', 'prefix', 'logo', 'logoIcon', 'logoPrint', 'logoWhite'],
-  },
-  {
-    key: 'stream',
-    label: 'Stream',
-    fields: [
-      'bunnyStorageZoneName',
-      'bunnyStorageAccessKey',
-      'bunnyStorageCdnDomain',
-      'bunnyStorageBaseUrl',
-      'bunnyStorageUserFolder',
-      'bunnyStorageLogoFolder',
-    ],
   },
 ];
 const isSettingsForm = computed(() => config.value.key === 'settings');
@@ -242,6 +237,68 @@ function fieldBoolean(key: string) {
 
 function fieldArray(key: string) {
   return Array.isArray(form[key]) ? (form[key] as Array<string | number>) : [];
+}
+
+function isSettingsLogoField(field: ResourceField) {
+  return config.value.key === 'settings' && ['logo', 'logoIcon', 'logoPrint', 'logoWhite'].includes(field.key);
+}
+
+function logoPreviewSrc(key: string) {
+  return selectedLogoPreviewUrls[key] || fieldText(key);
+}
+
+function revokeLogoPreviewUrl(key: string) {
+  if (selectedLogoPreviewUrls[key]) {
+    URL.revokeObjectURL(selectedLogoPreviewUrls[key]);
+    delete selectedLogoPreviewUrls[key];
+  }
+}
+
+function logoUploadPath(recordIdValue: string | number, fieldKey: string) {
+  const variantByField: Record<string, string> = {
+    logoIcon: 'icon',
+    logoPrint: 'print',
+    logoWhite: 'white',
+  };
+  const variant = variantByField[fieldKey];
+
+  return variant
+    ? `${config.value.endpoint}/${recordIdValue}/logos/${variant}`
+    : `${config.value.endpoint}/${recordIdValue}/logo`;
+}
+
+function updateLogoFile(key: string, event: Event) {
+  const [file] = Array.from((event.target as HTMLInputElement).files || []);
+  revokeLogoPreviewUrl(key);
+  selectedLogoFiles[key] = file || null;
+
+  if (file) {
+    selectedLogoPreviewUrls[key] = URL.createObjectURL(file);
+  }
+}
+
+async function uploadSelectedLogoFiles(recordIdValue: string | number) {
+  if (config.value.key !== 'settings') {
+    return;
+  }
+
+  for (const [fieldKey, file] of Object.entries(selectedLogoFiles)) {
+    if (!file) {
+      continue;
+    }
+
+    const body = new FormData();
+    body.append('logo', file);
+
+    const updatedSetting = await apiRequest<Record<string, unknown>>(logoUploadPath(recordIdValue, fieldKey), {
+      method: 'POST',
+      body,
+    });
+
+    config.value.fields.forEach((field) => setFieldValue(field, updatedSetting));
+    selectedLogoFiles[fieldKey] = null;
+    revokeLogoPreviewUrl(fieldKey);
+  }
 }
 
 function hasFieldOptions(field: ResourceField) {
@@ -454,18 +511,21 @@ async function save() {
   error.value = '';
 
   try {
+    let savedRecord: Record<string, unknown>;
+
     if (isEditing.value) {
-      await apiRequest(`${config.value.endpoint}/${recordId.value}`, {
+      savedRecord = await apiRequest<Record<string, unknown>>(`${config.value.endpoint}/${recordId.value}`, {
         method: 'PATCH',
         body: payload(),
       });
     } else {
-      await apiRequest(config.value.endpoint, {
+      savedRecord = await apiRequest<Record<string, unknown>>(config.value.endpoint, {
         method: 'POST',
         body: payload(),
       });
     }
 
+    await uploadSelectedLogoFiles((savedRecord.id as string | number | undefined) || recordId.value);
     router.push(config.value.endpoint);
   } catch (err) {
     error.value = err instanceof Error ? err.message : 'No se pudo guardar el registro.';
@@ -485,6 +545,10 @@ onMounted(async () => {
   loadRecord();
   loadTenantAdmin();
 });
+
+onBeforeUnmount(() => {
+  Object.keys(selectedLogoPreviewUrls).forEach((key) => revokeLogoPreviewUrl(key));
+});
 </script>
 
 <template>
@@ -498,7 +562,7 @@ onMounted(async () => {
       </div>
 
       <form @submit.prevent="save">
-        <div v-if="isSettingsForm" class="form-tabs" role="tablist" aria-label="Secciones de configuración">
+        <div v-if="isSettingsForm && settingsFieldsByTab.length > 1" class="form-tabs" role="tablist" aria-label="Secciones de configuración">
           <button
             v-for="tab in settingsFieldsByTab"
             :key="tab.key"
@@ -588,6 +652,32 @@ onMounted(async () => {
                     {{ option.label }}
                   </option>
                 </select>
+              </div>
+              <div v-else-if="isSettingsLogoField(field)" class="stacked-field logo-upload-field">
+                <input
+                  :id="field.key"
+                  :value="fieldText(field.key)"
+                  type="url"
+                  :disabled="loadingRecord"
+                  :placeholder="field.placeholder"
+                  :required="field.required && !(isEditing && field.createOnly)"
+                  @input="updateText(field.key, $event)"
+                />
+                <label class="file-picker-button" :for="`${field.key}-file`">
+                  <Upload :size="18" />
+                  <span>{{ selectedLogoFiles[field.key]?.name || 'Subir archivo' }}</span>
+                </label>
+                <input
+                  :id="`${field.key}-file`"
+                  class="visually-hidden"
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,image/gif,image/svg+xml"
+                  :disabled="loadingRecord || loading"
+                  @change="updateLogoFile(field.key, $event)"
+                />
+                <div v-if="logoPreviewSrc(field.key)" class="logo-preview-box">
+                  <img :src="logoPreviewSrc(field.key)" :alt="field.label" />
+                </div>
               </div>
               <input
                 v-else

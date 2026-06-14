@@ -4,6 +4,7 @@ import { computed } from 'vue';
 import {
   Building2,
   Cog,
+  Database,
   CreditCard,
   FileText,
   FolderTree,
@@ -21,8 +22,9 @@ import {
   WalletCards,
   ClipboardList,
 } from '@lucide/vue';
-import { canAccessResource, hasPermission } from '../services/permissions';
+import { canAccessResource, hasPermission, isMaster } from '../services/permissions';
 import { authState } from '../stores/auth';
+import { brandingState } from '../stores/branding';
 
 type MenuItem = {
   to: string;
@@ -30,6 +32,7 @@ type MenuItem = {
   icon: Component;
   permission?: string;
   resource?: string;
+  masterOnly?: boolean;
 };
 
 type MenuGroup = {
@@ -53,6 +56,7 @@ const menuGroups: MenuGroup[] = [
       { to: '/plans', label: 'Planes', icon: CreditCard, permission: 'plans.read', resource: 'plans' },
       { to: '/tenants', label: 'Empresas', icon: Building2, permission: 'tenants.read', resource: 'tenants' },
       { to: '/settings', label: 'Configuración', icon: Cog, permission: 'settings.read', resource: 'settings' },
+      { to: '/global-settings/bunny', label: 'Bunny global', icon: Database, masterOnly: true },
     ],
   },
   {
@@ -90,7 +94,11 @@ const visibleMenuGroups = computed(() =>
     .map((group) => ({
       ...group,
       items: group.items.filter((item) =>
-    item.resource ? canAccessResource(item.resource) : hasPermission(item.permission),
+        item.masterOnly
+          ? isMaster()
+          : item.resource
+            ? canAccessResource(item.resource)
+            : hasPermission(item.permission),
       ),
     }))
     .filter((group) => group.items.length > 0),
@@ -101,8 +109,11 @@ const visibleMenuGroups = computed(() =>
   <div class="relative flex flex-col h-full max-h-full">
     <div class="px-6 pt-4 flex items-center">
       <RouterLink class="flex-none rounded-xl text-xl inline-flex items-center gap-x-2 font-semibold focus:outline-hidden focus:opacity-80" to="/" aria-label="MiControl">
-        <span class="inline-flex size-9 items-center justify-center rounded-xl bg-primary-600 text-white font-black">M</span>
-        <span class="text-gray-900 dark:text-neutral-100">MiControl</span>
+        <span class="app-brand-mark size-9 rounded-xl">
+          <img v-if="brandingState.logo" :src="brandingState.logo" :alt="brandingState.name" />
+          <span v-else>M</span>
+        </span>
+        <span class="text-gray-900 dark:text-neutral-100">{{ brandingState.name }}</span>
       </RouterLink>
     </div>
 

@@ -119,11 +119,12 @@ export const resources: Record<string, ResourceConfig> = {
     title: 'Usuarios',
     endpoint: '/users',
     icon: UsersRound,
-    columns: ['id', 'username', 'name', 'email', 'role'],
+    columns: ['photoUrl', 'username', 'name', 'email', 'role'],
     createPath: '/users/create',
     editPath: (id) => `/users/${id}/edit`,
     columnLabels: {
       id: 'ID',
+      photoUrl: 'Foto',
       username: 'Usuario',
       name: 'Nombre',
       email: 'Correo',
@@ -572,7 +573,7 @@ export const resources: Record<string, ResourceConfig> = {
     title: 'Configuración',
     endpoint: '/settings',
     icon: Cog,
-    columns: ['id', 'name', 'prefix', 'logo', 'bunnyStorageCdnDomain'],
+    columns: ['id', 'name', 'prefix', 'logo'],
     createPath: '/settings/create',
     editPath: (id) => `/settings/${id}/edit`,
     columnLabels: {
@@ -580,7 +581,6 @@ export const resources: Record<string, ResourceConfig> = {
       name: 'Nombre',
       prefix: 'Prefijo',
       logo: 'Logo',
-      bunnyStorageCdnDomain: 'Dominio CDN Bunny',
     },
     fields: [
       { key: 'name', label: 'Nombre' },
@@ -589,12 +589,6 @@ export const resources: Record<string, ResourceConfig> = {
       { key: 'logoIcon', label: 'URL del icono del logo' },
       { key: 'logoPrint', label: 'URL del logo para impresión' },
       { key: 'logoWhite', label: 'URL del logo blanco' },
-      { key: 'bunnyStorageZoneName', label: 'Zona Bunny' },
-      { key: 'bunnyStorageAccessKey', label: 'Clave de acceso Bunny' },
-      { key: 'bunnyStorageCdnDomain', label: 'Dominio CDN Bunny' },
-      { key: 'bunnyStorageBaseUrl', label: 'URL base Bunny' },
-      { key: 'bunnyStorageUserFolder', label: 'Carpeta de usuarios' },
-      { key: 'bunnyStorageLogoFolder', label: 'Carpeta de logos' },
     ],
   },
   services: {

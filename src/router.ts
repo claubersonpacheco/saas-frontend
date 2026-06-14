@@ -1,10 +1,11 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import { hasPermission, hasPlanModule } from './services/permissions';
+import { hasPermission, hasPlanModule, isMaster } from './services/permissions';
 import { apiRequest } from './services/api';
 import { authState, updateUser } from './stores/auth';
 import type { User } from './types';
 import LoginPage from './pages/auth/login.vue';
 import DashboardPage from './pages/dashboard/index.vue';
+import BunnyGlobalSettingsPage from './pages/global-settings/bunny.vue';
 import BudgetFiltersCreatePage from './pages/budget-filters/create.vue';
 import BudgetFiltersEditPage from './pages/budget-filters/edit.vue';
 import BudgetFiltersIndexPage from './pages/budget-filters/index.vue';
@@ -77,6 +78,7 @@ export const router = createRouter({
     { path: '/login', name: 'login', component: LoginPage, meta: { public: true } },
     { path: '/', name: 'dashboard', component: DashboardPage },
     { path: '/perfil', name: 'profile', component: ProfilePage },
+    { path: '/global-settings/bunny', name: 'global-settings-bunny', component: BunnyGlobalSettingsPage, meta: { masterOnly: true } },
     { path: '/users', name: 'users-index', component: UsersIndexPage, meta: { permission: 'users.read', module: 'users' } },
     { path: '/users/create', name: 'user-create', component: UsersCreatePage, meta: { permission: 'users.create', module: 'users' } },
     { path: '/users/:id/edit', name: 'user-edit', component: UsersEditPage, meta: { permission: 'users.update', module: 'users' } },
@@ -176,8 +178,13 @@ router.beforeEach(async (to) => {
 
   const permission = to.meta.permission as string | undefined;
   const module = to.meta.module as string | undefined;
+  const masterOnly = Boolean(to.meta.masterOnly);
 
-  if ((module && !hasPlanModule(module)) || (permission && !hasPermission(permission))) {
+  if (
+    (masterOnly && !isMaster()) ||
+    (module && !hasPlanModule(module)) ||
+    (permission && !hasPermission(permission))
+  ) {
     return { name: 'dashboard' };
   }
 

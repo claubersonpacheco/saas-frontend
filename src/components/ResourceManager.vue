@@ -163,12 +163,46 @@ function columnLabel(column: string) {
   return props.config.columnLabels?.[column] || column;
 }
 
+function isLogoColumn(column: string) {
+  return ['logo', 'logoIcon', 'logoPrint', 'logoWhite'].includes(column);
+}
+
+function logoValue(item: Record<string, unknown>, column: string) {
+  const value = getValue(item, column);
+  return typeof value === 'string' ? value : '';
+}
+
+function isUserPhotoColumn(column: string) {
+  return props.config.key === 'users' && column === 'photoUrl';
+}
+
+function userPhotoValue(item: Record<string, unknown>) {
+  const value = item.photoUrl;
+  return typeof value === 'string' ? value : '';
+}
+
+function userInitials(item: Record<string, unknown>) {
+  const parts = [item.name, item.lastname]
+    .map((value) => String(value || '').trim())
+    .filter(Boolean);
+  const source = parts.length
+    ? parts
+    : [String(item.username || item.email || 'U').trim()];
+
+  return source
+    .slice(0, 2)
+    .map((part) => part.charAt(0).toUpperCase())
+    .join('');
+}
+
 function editPath(item: Record<string, unknown>) {
   if (!props.config.editPath || !item.id) {
     return '';
   }
 
-  return props.config.editPath(String(item.id));
+  const routeId = props.config.key === 'users' && item.uuid ? item.uuid : item.id;
+
+  return props.config.editPath(String(routeId));
 }
 
 function budgetItemsPath(item: Record<string, unknown>) {
@@ -655,7 +689,15 @@ onMounted(async () => {
                 </tr>
                 <tr v-for="(item, index) in paginatedItems" v-else :key="rowKey(item, index)">
                   <td v-for="column in config.columns" :key="column">
-                    <span>{{ getValue(item, column) }}</span>
+                    <span v-if="isLogoColumn(column) && logoValue(item, column)" class="resource-table-logo">
+                      <img :src="logoValue(item, column)" :alt="columnLabel(column)" />
+                    </span>
+                    <span v-else-if="isLogoColumn(column)" class="resource-table-muted">Sin logo</span>
+                    <span v-else-if="isUserPhotoColumn(column)" class="resource-table-avatar">
+                      <img v-if="userPhotoValue(item)" :src="userPhotoValue(item)" :alt="getValue(item, 'name')" />
+                      <span v-else>{{ userInitials(item) }}</span>
+                    </span>
+                    <span v-else>{{ getValue(item, column) }}</span>
                   </td>
                   <td>
                     <div class="resource-row-actions">

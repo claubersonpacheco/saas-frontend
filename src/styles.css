@@ -82,6 +82,26 @@ code {
   font-weight: 800;
 }
 
+.app-brand-mark {
+  display: inline-grid;
+  flex: 0 0 auto;
+  place-items: center;
+  overflow: hidden;
+  background: #0c7c59;
+  color: #fff;
+  font-weight: 800;
+}
+
+.brand-mark img,
+.app-brand-mark img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #fff;
+  padding: 4px;
+}
+
 .brand strong,
 .user-chip strong {
   display: block;
@@ -541,6 +561,67 @@ td {
   font-size: 14px;
 }
 
+.resource-table-logo {
+  display: grid !important;
+  width: 72px;
+  height: 42px;
+  max-width: none !important;
+  place-items: center;
+  border: 1px solid #dfe7e2;
+  border-radius: 8px;
+  background:
+    linear-gradient(45deg, #f4f6f5 25%, transparent 25%),
+    linear-gradient(-45deg, #f4f6f5 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #f4f6f5 75%),
+    linear-gradient(-45deg, transparent 75%, #f4f6f5 75%);
+  background-color: #ffffff;
+  background-position:
+    0 0,
+    0 6px,
+    6px -6px,
+    -6px 0;
+  background-size: 12px 12px;
+  padding: 5px;
+}
+
+.resource-table-logo img {
+  display: block;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.resource-table-avatar {
+  display: grid !important;
+  width: 42px;
+  height: 42px;
+  max-width: none !important;
+  place-items: center;
+  overflow: hidden;
+  border: 1px solid #dfe7e2;
+  border-radius: 50%;
+  background: #edf6f1;
+  color: #0f3d31 !important;
+  font-size: 13px !important;
+  font-weight: 750;
+  line-height: 1;
+}
+
+.resource-table-avatar img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.resource-table-avatar span {
+  max-width: none !important;
+  color: inherit !important;
+  font-size: inherit !important;
+  font-weight: inherit;
+  line-height: inherit;
+}
+
 .resource-table-action-col {
   width: 156px;
 }
@@ -790,6 +871,81 @@ td {
 .stacked-field {
   display: grid;
   gap: 8px;
+}
+
+.logo-upload-field {
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.logo-upload-field input[type="url"] {
+  min-width: 0;
+}
+
+.logo-preview-box {
+  display: grid;
+  grid-column: 1 / -1;
+  width: 180px;
+  height: 96px;
+  place-items: center;
+  border: 1px solid #dfe7e2;
+  border-radius: 8px;
+  background:
+    linear-gradient(45deg, #f4f6f5 25%, transparent 25%),
+    linear-gradient(-45deg, #f4f6f5 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #f4f6f5 75%),
+    linear-gradient(-45deg, transparent 75%, #f4f6f5 75%);
+  background-color: #ffffff;
+  background-position:
+    0 0,
+    0 8px,
+    8px -8px,
+    -8px 0;
+  background-size: 16px 16px;
+  padding: 8px;
+}
+
+.logo-preview-box img {
+  display: block;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.file-picker-button {
+  display: inline-flex;
+  min-height: 40px;
+  max-width: 220px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid #cfdad5;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #172126;
+  padding: 8px 12px;
+  font-size: 14px;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.file-picker-button span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.file-picker-button:hover {
+  border-color: #0c7c59;
+  color: #075f43;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
 }
 
 .lookup-field {

@@ -1,15 +1,17 @@
 <script setup lang="ts">
 import { Eye, EyeOff, KeyRound, LogIn } from '@lucide/vue';
-import { reactive, ref } from 'vue';
+import { reactive, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { apiRequest } from '../../services/api';
 import { setSession } from '../../stores/auth';
+import { brandingState, loadPublicBranding } from '../../stores/branding';
 import type { User } from '../../types';
 
 const router = useRouter();
 const loading = ref(false);
 const error = ref('');
 const showPassword = ref(false);
+let brandingTimer: number | undefined;
 
 const form = reactive({
   identifier: '',
@@ -39,15 +41,28 @@ async function submit() {
     loading.value = false;
   }
 }
+
+watch(
+  () => form.tenantSlug,
+  (tenantSlug) => {
+    window.clearTimeout(brandingTimer);
+    brandingTimer = window.setTimeout(() => {
+      loadPublicBranding(tenantSlug);
+    }, 350);
+  },
+);
 </script>
 
 <template>
   <main class="login-screen">
     <section class="login-panel">
       <div class="login-brand">
-        <span class="brand-mark">M</span>
+        <span class="brand-mark">
+          <img v-if="brandingState.logo" :src="brandingState.logo" :alt="brandingState.name" />
+          <span v-else>M</span>
+        </span>
         <div>
-          <p class="eyebrow">MiControl</p>
+          <p class="eyebrow">{{ brandingState.name }}</p>
           <h1>Entrar al panel</h1>
         </div>
       </div>

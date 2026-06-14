@@ -47,6 +47,7 @@ export type Tenant = {
 
 export type User = {
   id: number;
+  uuid?: string;
   tenantId: number;
   username: string;
   name: string;
@@ -67,10 +68,4 @@ export type Setting = {
   logoIcon?: string | null;
   logoPrint?: string | null;
   logoWhite?: string | null;
-  bunnyStorageZoneName?: string | null;
-  bunnyStorageAccessKey?: string | null;
-  bunnyStorageCdnDomain?: string | null;
-  bunnyStorageBaseUrl?: string | null;
-  bunnyStorageUserFolder?: string | null;
-  bunnyStorageLogoFolder?: string | null;
 };

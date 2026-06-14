@@ -7,9 +7,10 @@ import {
   Search,
   User,
 } from '@lucide/vue';
-import { computed } from 'vue';
+import { computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { authState, clearSession } from '../stores/auth';
+import { brandingState, loadAuthenticatedBranding } from '../stores/branding';
 import AppMenu from './AppMenu.vue';
 
 const router = useRouter();
@@ -28,6 +29,10 @@ function logout() {
   clearSession();
   router.push({ name: 'login' });
 }
+
+onMounted(() => {
+  loadAuthenticatedBranding();
+});
 </script>
 
 <template>
@@ -36,8 +41,11 @@ function logout() {
       <nav class="px-4 sm:px-6 flex basis-full items-center w-full mx-auto">
         <div class="me-5 lg:hidden">
           <RouterLink class="flex-none rounded-md text-xl inline-flex items-center gap-x-2 font-semibold focus:outline-hidden focus:opacity-80" to="/" aria-label="MiControl">
-            <span class="inline-flex size-8 items-center justify-center rounded-lg bg-primary-600 text-white font-black">M</span>
-            <span class="text-gray-900 dark:text-neutral-100">MiControl</span>
+            <span class="app-brand-mark size-8 rounded-lg">
+              <img v-if="brandingState.logo" :src="brandingState.logo" :alt="brandingState.name" />
+              <span v-else>M</span>
+            </span>
+            <span class="text-gray-900 dark:text-neutral-100">{{ brandingState.name }}</span>
           </RouterLink>
         </div>
 
@@ -88,7 +96,13 @@ function logout() {
                 aria-expanded="false"
                 aria-label="Cuenta"
               >
-                <span class="inline-flex size-9.5 items-center justify-center rounded-full bg-primary-100 text-primary-700 text-xs font-bold">
+                <img
+                  v-if="authState.user?.photoUrl"
+                  :src="authState.user.photoUrl"
+                  :alt="authState.user.name || authState.user.username"
+                  class="size-9.5 rounded-full object-cover"
+                />
+                <span v-else class="inline-flex size-9.5 items-center justify-center rounded-full bg-primary-100 text-primary-700 text-xs font-bold">
                   {{ initials }}
                 </span>
               </button>
