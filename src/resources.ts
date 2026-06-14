@@ -609,6 +609,7 @@ export const resources: Record<string, ResourceConfig> = {
     },
     fields: [
       { key: 'code', label: 'Código', required: true },
+      { key: 'userId', label: 'Responsable', type: 'number', required: true },
       {
         key: 'addressType',
         label: 'Tipo de dirección',

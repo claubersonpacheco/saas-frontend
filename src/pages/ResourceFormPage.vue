@@ -18,6 +18,7 @@ const loading = ref(false);
 const loadingRecord = ref(false);
 const loadingPlans = ref(false);
 const loadingCustomers = ref(false);
+const loadingServiceUsers = ref(false);
 const loadingTenantAdmin = ref(false);
 const savingTenantAdminPassword = ref(false);
 const error = ref('');
@@ -30,6 +31,7 @@ const tenantAdmin = ref<User | null>(null);
 const codePrefix = ref('FS');
 const categoryOptions = ref<Array<{ value: number; label: string }>>([]);
 const customerOptions = ref<Array<{ value: number; label: string }>>([]);
+const serviceUserOptions = ref<Array<{ value: number; label: string }>>([]);
 const customerSearch = ref('');
 const customerModalOpen = ref(false);
 const activeSettingsTab = ref('identity');
@@ -223,6 +225,11 @@ function setFieldValue(field: ResourceField, record: Record<string, unknown>) {
     return;
   }
 
+  if (field.key === 'userId') {
+    form[field.key] = value ?? (record.user as { id?: number } | undefined)?.id ?? '';
+    return;
+  }
+
   form[field.key] = value ?? (field.type === 'boolean' ? true : '');
 }
 
@@ -306,6 +313,10 @@ function hasFieldOptions(field: ResourceField) {
     return true;
   }
 
+  if (config.value.key === 'services' && field.key === 'userId') {
+    return true;
+  }
+
   return Boolean(field.options?.length || fieldOptions(field).length);
 }
 
@@ -361,7 +372,17 @@ function fieldOptions(field: ResourceField) {
     return filteredCustomerOptions.value;
   }
 
+  if (config.value.key === 'services' && field.key === 'userId') {
+    return serviceUserOptions.value;
+  }
+
   return field.options || [];
+}
+
+function serviceUserLabel(user: Record<string, unknown>) {
+  const fullName = [user.name, user.lastname].filter(Boolean).join(' ').trim();
+
+  return [fullName || user.username, user.email].filter(Boolean).join(' - ') || String(user.id);
 }
 
 async function loadCustomerOptions() {
@@ -384,6 +405,28 @@ async function loadCustomerOptions() {
     customerOptions.value = [];
   } finally {
     loadingCustomers.value = false;
+  }
+}
+
+async function loadServiceUserOptions() {
+  serviceUserOptions.value = [];
+
+  if (config.value.key !== 'services') {
+    return;
+  }
+
+  loadingServiceUsers.value = true;
+
+  try {
+    const users = await apiRequest<Array<Record<string, unknown>>>('/services/users/options');
+    serviceUserOptions.value = users.map((user) => ({
+      value: Number(user.id),
+      label: serviceUserLabel(user),
+    }));
+  } catch {
+    serviceUserOptions.value = [];
+  } finally {
+    loadingServiceUsers.value = false;
   }
 }
 
@@ -540,6 +583,7 @@ onMounted(async () => {
   await loadCodePrefix();
   await loadCategoryOptions();
   await loadCustomerOptions();
+  await loadServiceUserOptions();
   loadGeneratedCode();
   loadPlans();
   loadRecord();
@@ -641,12 +685,12 @@ onBeforeUnmount(() => {
                 <select
                   :id="field.key"
                   :value="fieldText(field.key)"
-                  :disabled="loadingRecord || (field.key === 'planId' && loadingPlans) || (field.key === 'customerId' && loadingCustomers)"
+                  :disabled="loadingRecord || (field.key === 'planId' && loadingPlans) || (field.key === 'customerId' && loadingCustomers) || (field.key === 'userId' && loadingServiceUsers)"
                   :required="field.required"
                   @change="updateText(field.key, $event)"
                 >
                   <option value="">
-                    {{ field.key === 'planId' ? 'Tenant central (sin plan)' : field.key === 'customerId' && loadingCustomers ? 'Cargando clientes...' : 'Seleccione...' }}
+                    {{ field.key === 'planId' ? 'Tenant central (sin plan)' : field.key === 'customerId' && loadingCustomers ? 'Cargando clientes...' : field.key === 'userId' && loadingServiceUsers ? 'Cargando usuarios...' : 'Seleccione...' }}
                   </option>
                   <option v-for="option in fieldOptions(field)" :key="option.value" :value="option.value">
                     {{ option.label }}
