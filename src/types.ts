@@ -69,3 +69,23 @@ export type Setting = {
   logoPrint?: string | null;
   logoWhite?: string | null;
 };
+
+export type Service = {
+  id: number;
+  userId: number;
+  code: string;
+  addressType?: number | null;
+  address?: string | null;
+  number?: string | null;
+  complement?: string | null;
+  city?: string | null;
+  state?: string | null;
+  postal?: string | null;
+  description?: string | null;
+  status?: number | null;
+  dateStart?: string | null;
+  dateEnd?: string | null;
+  hourStart?: string | null;
+  hourEnd?: string | null;
+  user?: User | null;
+};
