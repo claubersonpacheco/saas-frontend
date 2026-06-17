@@ -109,7 +109,6 @@ watch(
       </form>
 
       <div class="login-footer">
-        <KeyRound :size="16" />
         <span><a href="https://ferchecosolutions.com" target="_blank">by Fercheco Solutions</a></span>
       </div>
     </section>
