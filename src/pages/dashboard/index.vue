@@ -178,10 +178,6 @@ onMounted(async () => {
         <Activity :size="20" />
         <h2>Operación</h2>
       </div>
-      <p class="muted">
-        El frontend está integrado con los endpoints protegidos de NestJS usando el token recibido en
-        <code>/auth/login</code>. Los contadores muestran los datos disponibles según los permisos del usuario conectado.
-      </p>
     </section>
   </AppShell>
 </template>
