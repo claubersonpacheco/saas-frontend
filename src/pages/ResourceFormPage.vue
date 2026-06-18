@@ -57,6 +57,7 @@ const settingsTabs = [
     fields: ['name', 'prefix', 'logo', 'logoIcon', 'logoPrint', 'logoWhite'],
   },
 ];
+const CURRENT_DATE_FIELD_KEYS = new Set(['date', 'dateStart', 'fechaEmision']);
 const isSettingsForm = computed(() => config.value.key === 'settings');
 const settingsFieldsByTab = computed(() =>
   settingsTabs.map((tab) => ({
@@ -135,7 +136,14 @@ function resetForm() {
 
   config.value.fields.forEach((field) => {
     form[field.key] =
-      field.defaultValue ?? (field.type === 'boolean' ? true : field.type === 'multiselect' ? [] : '');
+      field.defaultValue ??
+      (field.type === 'date' && CURRENT_DATE_FIELD_KEYS.has(field.key)
+        ? formatDateInput(new Date())
+        : field.type === 'boolean'
+          ? true
+          : field.type === 'multiselect'
+            ? []
+            : '');
   });
 
   setBudgetDefaultDates();

@@ -338,6 +338,12 @@ code {
   color: #172126;
 }
 
+.today-service-code {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .today-service-heading span {
   border-radius: 999px;
   background: #eef4f1;
@@ -360,6 +366,26 @@ code {
 .today-service-main p svg {
   flex: 0 0 auto;
   color: #0c7c59;
+}
+
+.today-service-map-link {
+  display: inline-flex;
+  min-width: 0;
+  align-items: center;
+  gap: 6px;
+  color: #0c7c59;
+  font-size: 13px;
+  font-weight: 650;
+  text-decoration: none;
+}
+
+.today-service-map-link:hover {
+  color: #075f43;
+  text-decoration: underline;
+}
+
+.today-service-map-link svg {
+  flex: 0 0 auto;
 }
 
 .today-service-user {
@@ -725,6 +751,40 @@ td {
   line-height: inherit;
 }
 
+.service-code-cell {
+  display: inline-flex !important;
+  max-width: none !important;
+  align-items: center;
+  gap: 8px;
+}
+
+.service-code-cell span {
+  color: #172126 !important;
+  font-weight: 700;
+}
+
+.service-map-link {
+  display: inline-flex;
+  max-width: 360px;
+  align-items: center;
+  gap: 6px;
+  color: #0c7c59;
+  font-size: 14px;
+  font-weight: 650;
+  text-decoration: none;
+}
+
+.service-map-link span {
+  display: block;
+  color: inherit !important;
+  overflow-wrap: anywhere;
+}
+
+.service-map-link:hover {
+  color: #075f43;
+  text-decoration: underline;
+}
+
 .resource-table-action-col {
   width: 156px;
 }
@@ -772,6 +832,11 @@ td {
   border-color: #aebeb7;
   background: #f7faf8;
   color: #075f43;
+}
+
+.resource-table-icon.compact-icon {
+  width: 30px;
+  height: 30px;
 }
 
 .resource-table-icon.danger {

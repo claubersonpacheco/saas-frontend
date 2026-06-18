@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Activity, Building2, CalendarDays, ClipboardList, CreditCard, MapPin, ShieldCheck, UsersRound } from '@lucide/vue';
+import { Activity, Building2, CalendarDays, ClipboardList, Copy, CreditCard, MapPin, ShieldCheck, UsersRound } from '@lucide/vue';
 import { computed, onMounted, ref } from 'vue';
 import AppShell from '../../components/AppShell.vue';
 import { getValue } from '../../resources';
@@ -11,6 +11,7 @@ import type { Service } from '../../types';
 const loading = ref(true);
 const loadingTodayServices = ref(false);
 const todayServicesError = ref('');
+const todayServicesMessage = ref('');
 const todayServices = ref<Service[]>([]);
 const counts = ref([
   { label: 'Usuarios', value: '-', icon: UsersRound, path: '/users', resource: 'users', permission: 'users.read' },
@@ -55,6 +56,24 @@ function serviceTime(value?: string | null): string {
   return time ? time.slice(0, 5) : '--:--';
 }
 
+function serviceScheduleTime(value?: string | null): string {
+  const time = String(value || '').trim();
+
+  return time ? time.slice(0, 5) : '99:99';
+}
+
+function compareServicesBySchedule(first: Service, second: Service): number {
+  const dateComparison = serviceDateKey(first.dateStart).localeCompare(serviceDateKey(second.dateStart));
+
+  if (dateComparison !== 0) {
+    return dateComparison;
+  }
+
+  const timeComparison = serviceScheduleTime(first.hourStart).localeCompare(serviceScheduleTime(second.hourStart));
+
+  return timeComparison !== 0 ? timeComparison : first.id - second.id;
+}
+
 function serviceStatus(service: Service): string {
   return getValue(service as unknown as Record<string, unknown>, 'status') || '-';
 }
@@ -63,8 +82,27 @@ function serviceAddress(service: Service): string {
   return getValue(service as unknown as Record<string, unknown>, 'fullAddress');
 }
 
+function serviceMapsUrl(service: Service): string {
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(serviceAddress(service))}`;
+}
+
 function serviceResponsible(service: Service): string {
   return [service.user?.name, service.user?.lastname].filter(Boolean).join(' ') || service.user?.username || '-';
+}
+
+async function copyServiceCode(service: Service) {
+  if (!service.code) {
+    return;
+  }
+
+  try {
+    await navigator.clipboard.writeText(service.code);
+    todayServicesMessage.value = 'Código del servicio copiado.';
+    todayServicesError.value = '';
+  } catch {
+    todayServicesMessage.value = '';
+    todayServicesError.value = 'No se pudo copiar el código.';
+  }
 }
 
 async function loadCounts() {
@@ -97,6 +135,7 @@ async function loadTodayServices() {
 
   loadingTodayServices.value = true;
   todayServicesError.value = '';
+  todayServicesMessage.value = '';
 
   try {
     const services = await apiRequest<Service[]>('/services');
@@ -105,7 +144,7 @@ async function loadTodayServices() {
     todayServices.value = services
       .filter((service) => serviceDateKey(service.dateStart) === today)
       .filter((service) => canSeeAllTodayServices() || isCurrentUserService(service))
-      .sort((first, second) => serviceTime(first.hourStart).localeCompare(serviceTime(second.hourStart)));
+      .sort(compareServicesBySchedule);
   } catch (error) {
     todayServicesError.value =
       error instanceof Error ? error.message : 'No fue posible cargar los servicios de hoy.';
@@ -142,6 +181,7 @@ onMounted(async () => {
       </div>
 
       <p v-if="loadingTodayServices" class="muted">Cargando servicios del dia...</p>
+      <p v-else-if="todayServicesMessage" class="alert success">{{ todayServicesMessage }}</p>
       <p v-else-if="todayServicesError" class="alert error">{{ todayServicesError }}</p>
       <p v-else-if="todayServices.length === 0" class="muted">No hay servicios programados para hoy.</p>
 
@@ -159,10 +199,33 @@ onMounted(async () => {
 
           <div class="today-service-main">
             <div class="today-service-heading">
-              <strong>{{ service.code }}</strong>
+              <span class="today-service-code">
+                <strong>{{ service.code }}</strong>
+                <button
+                  class="resource-table-icon compact-icon"
+                  type="button"
+                  title="Copiar código"
+                  aria-label="Copiar código"
+                  @click.prevent="copyServiceCode(service)"
+                >
+                  <Copy :size="15" />
+                </button>
+              </span>
               <span>{{ serviceStatus(service) }}</span>
             </div>
-            <p>
+            <a
+              v-if="serviceAddress(service) !== '-'"
+              class="today-service-map-link"
+              :href="serviceMapsUrl(service)"
+              target="_blank"
+              rel="noopener noreferrer"
+              title="Abrir en Google Maps"
+              @click.stop
+            >
+              <MapPin :size="15" />
+              {{ serviceAddress(service) }}
+            </a>
+            <p v-else>
               <MapPin :size="15" />
               {{ serviceAddress(service) }}
             </p>

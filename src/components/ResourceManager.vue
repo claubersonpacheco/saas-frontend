@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ChevronLeft, ChevronRight, ClipboardList, Edit3, Plus, RefreshCw, Save, Trash2, X } from '@lucide/vue';
+import { ChevronLeft, ChevronRight, ClipboardList, Copy, Edit3, MapPin, Plus, RefreshCw, Save, Trash2, X } from '@lucide/vue';
 import { computed, onMounted, reactive, ref, watch } from 'vue';
 import { apiRequest } from '../services/api';
 import { canGenerateCode, generateCode } from '../services/codeGenerator';
@@ -131,10 +131,17 @@ const filteredItems = computed(() => {
     return true;
   });
 });
+const sortedItems = computed(() => {
+  if (!showServiceFilters.value) {
+    return filteredItems.value;
+  }
+
+  return [...filteredItems.value].sort(compareServicesBySchedule);
+});
 const totalPages = computed(() => Math.max(1, Math.ceil(filteredItems.value.length / pageSize.value)));
 const paginatedItems = computed(() => {
   const start = (page.value - 1) * pageSize.value;
-  return filteredItems.value.slice(start, start + pageSize.value);
+  return sortedItems.value.slice(start, start + pageSize.value);
 });
 const serviceYears = computed(() => {
   const years = items.value
@@ -195,6 +202,42 @@ function userInitials(item: Record<string, unknown>) {
     .join('');
 }
 
+function isServiceCodeColumn(column: string) {
+  return props.config.key === 'services' && column === 'code';
+}
+
+function isServiceAddressColumn(column: string) {
+  return props.config.key === 'services' && column === 'fullAddress';
+}
+
+function serviceCode(item: Record<string, unknown>) {
+  return String(item.code || '');
+}
+
+function serviceAddress(item: Record<string, unknown>) {
+  return getValue(item, 'fullAddress');
+}
+
+function serviceMapsUrl(item: Record<string, unknown>) {
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(serviceAddress(item))}`;
+}
+
+async function copyServiceCode(item: Record<string, unknown>) {
+  const code = serviceCode(item);
+
+  if (!code) {
+    return;
+  }
+
+  try {
+    await navigator.clipboard.writeText(code);
+    message.value = 'Código del servicio copiado.';
+    error.value = '';
+  } catch {
+    error.value = 'No se pudo copiar el código.';
+  }
+}
+
 function editPath(item: Record<string, unknown>) {
   if (!props.config.editPath || !item.id) {
     return '';
@@ -244,6 +287,28 @@ function serviceWeek(value: string) {
   const week = Math.ceil(((target.getTime() - yearStart.getTime()) / 86400000 + 1) / 7);
 
   return `${target.getUTCFullYear()}-W${String(week).padStart(2, '0')}`;
+}
+
+function serviceDateKey(item: Record<string, unknown>) {
+  return String(item.dateStart || '').slice(0, 10);
+}
+
+function serviceScheduleTime(item: Record<string, unknown>) {
+  const time = String(item.hourStart || '').trim();
+
+  return time ? time.slice(0, 5) : '99:99';
+}
+
+function compareServicesBySchedule(first: Record<string, unknown>, second: Record<string, unknown>) {
+  const dateComparison = serviceDateKey(first).localeCompare(serviceDateKey(second));
+
+  if (dateComparison !== 0) {
+    return dateComparison;
+  }
+
+  const timeComparison = serviceScheduleTime(first).localeCompare(serviceScheduleTime(second));
+
+  return timeComparison !== 0 ? timeComparison : Number(first.id || 0) - Number(second.id || 0);
 }
 
 function clearDateFilters() {
@@ -697,6 +762,29 @@ onMounted(async () => {
                       <img v-if="userPhotoValue(item)" :src="userPhotoValue(item)" :alt="getValue(item, 'name')" />
                       <span v-else>{{ userInitials(item) }}</span>
                     </span>
+                    <span v-else-if="isServiceCodeColumn(column)" class="service-code-cell">
+                      <span>{{ serviceCode(item) }}</span>
+                      <button
+                        class="resource-table-icon compact-icon"
+                        type="button"
+                        title="Copiar código"
+                        aria-label="Copiar código"
+                        @click="copyServiceCode(item)"
+                      >
+                        <Copy :size="15" />
+                      </button>
+                    </span>
+                    <a
+                      v-else-if="isServiceAddressColumn(column) && serviceAddress(item) !== '-'"
+                      class="service-map-link"
+                      :href="serviceMapsUrl(item)"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      title="Abrir en Google Maps"
+                    >
+                      <MapPin :size="15" />
+                      <span>{{ serviceAddress(item) }}</span>
+                    </a>
                     <span v-else>{{ getValue(item, column) }}</span>
                   </td>
                   <td>
