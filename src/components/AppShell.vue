@@ -164,7 +164,7 @@ onMounted(() => {
               <span class="mx-3 text-gray-300 dark:text-neutral-600">/</span>
             </li>
             <li class="text-sm font-semibold text-gray-800 dark:text-neutral-200 truncate" aria-current="page">
-              <slot name="title">Panel</slot>
+              <slot name="title">Panel teste</slot>
             </li>
           </ol>
         </div>
