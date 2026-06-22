@@ -184,7 +184,7 @@ onMounted(() => {
     <main class="w-full lg:ps-65">
       <div class="p-4 sm:p-6 space-y-4 sm:space-y-6">
         <div class="hidden lg:block">
-          <p class="text-xs font-semibold uppercase text-primary-700 dark:text-primary-300">SaaS Core - teste</p>
+          <p class="text-xs font-semibold uppercase text-primary-700 dark:text-primary-300">SaaS Core</p>
           <h1 class="text-2xl font-semibold text-gray-900 dark:text-neutral-100">
             <slot name="title">Panel</slot>
           </h1>
