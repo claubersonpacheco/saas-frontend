@@ -5,6 +5,7 @@ import { useRoute, useRouter } from 'vue-router';
 import AppShell from '../components/AppShell.vue';
 import { apiRequest } from '../services/api';
 import { canGenerateCode, generateCode } from '../services/codeGenerator';
+import { hasPermission } from '../services/permissions';
 import { resources, type ResourceField } from '../resources';
 import type { Plan, User } from '../types';
 
@@ -47,6 +48,13 @@ const config = computed(() => resources[props.resourceKey]);
 const recordId = computed(() => String(route.params.id || ''));
 const isEditing = computed(() => Boolean(recordId.value));
 const title = computed(() => `${isEditing.value ? 'Editar' : 'Nuevo'} ${config.value.title.toLowerCase()}`);
+const returnPath = computed(() => {
+  const value = Array.isArray(route.query.returnTo) ? route.query.returnTo[0] : route.query.returnTo;
+
+  return typeof value === 'string' && value.startsWith('/') && !value.startsWith('//')
+    ? value
+    : config.value.endpoint;
+});
 const visibleFields = computed(() =>
   config.value.fields.filter((field) => (isEditing.value ? !field.hideOnEdit : !field.hideOnCreate)),
 );
@@ -426,8 +434,23 @@ async function loadServiceUserOptions() {
   loadingServiceUsers.value = true;
 
   try {
-    const users = await apiRequest<Array<Record<string, unknown>>>('/services/users/options');
-    serviceUserOptions.value = users.map((user) => ({
+    const [serviceUsers, allUsers] = await Promise.all([
+      apiRequest<Array<Record<string, unknown>>>('/services/users/options').catch(() => []),
+      hasPermission('users.read')
+        ? apiRequest<Array<Record<string, unknown>>>('/users').catch(() => [])
+        : Promise.resolve([]),
+    ]);
+    const usersById = new Map<number, Record<string, unknown>>();
+
+    [...serviceUsers, ...allUsers].forEach((user) => {
+      const id = Number(user.id);
+
+      if (Number.isFinite(id)) {
+        usersById.set(id, user);
+      }
+    });
+
+    serviceUserOptions.value = Array.from(usersById.values()).map((user) => ({
       value: Number(user.id),
       label: serviceUserLabel(user),
     }));
@@ -577,7 +600,7 @@ async function save() {
     }
 
     await uploadSelectedLogoFiles((savedRecord.id as string | number | undefined) || recordId.value);
-    router.push(config.value.endpoint);
+    router.push(returnPath.value);
   } catch (err) {
     error.value = err instanceof Error ? err.message : 'No se pudo guardar el registro.';
   } finally {
@@ -795,7 +818,7 @@ onBeforeUnmount(() => {
         <p v-if="error" class="alert error">{{ error }}</p>
 
         <div class="form-actions">
-          <RouterLink class="secondary-button" :to="config.endpoint">
+          <RouterLink class="secondary-button" :to="returnPath">
             <ArrowLeft :size="18" />
             Volver
           </RouterLink>

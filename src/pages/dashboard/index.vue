@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Activity, Building2, CalendarDays, ClipboardList, Copy, CreditCard, MapPin, ShieldCheck, UsersRound } from '@lucide/vue';
+import { Activity, Building2, CalendarDays, ClipboardList, Copy, CreditCard, MapPin, ShieldCheck, UsersRound, X } from '@lucide/vue';
 import { computed, onMounted, ref } from 'vue';
 import AppShell from '../../components/AppShell.vue';
 import { getValue } from '../../resources';
@@ -11,7 +11,9 @@ import type { Service } from '../../types';
 const loading = ref(true);
 const loadingTodayServices = ref(false);
 const todayServicesError = ref('');
-const todayServicesMessage = ref('');
+const copyModalOpen = ref(false);
+const copyModalMessage = ref('');
+const copyModalError = ref(false);
 const todayServices = ref<Service[]>([]);
 const counts = ref([
   { label: 'Usuarios', value: '-', icon: UsersRound, path: '/users', resource: 'users', permission: 'users.read' },
@@ -90,6 +92,16 @@ function serviceResponsible(service: Service): string {
   return [service.user?.name, service.user?.lastname].filter(Boolean).join(' ') || service.user?.username || '-';
 }
 
+function showCopyModal(message: string, isError = false) {
+  copyModalMessage.value = message;
+  copyModalError.value = isError;
+  copyModalOpen.value = true;
+}
+
+function closeCopyModal() {
+  copyModalOpen.value = false;
+}
+
 async function copyServiceCode(service: Service) {
   if (!service.code) {
     return;
@@ -97,11 +109,9 @@ async function copyServiceCode(service: Service) {
 
   try {
     await navigator.clipboard.writeText(service.code);
-    todayServicesMessage.value = 'Código del servicio copiado.';
-    todayServicesError.value = '';
+    showCopyModal('Código del servicio copiado.');
   } catch {
-    todayServicesMessage.value = '';
-    todayServicesError.value = 'No se pudo copiar el código.';
+    showCopyModal('No se pudo copiar el código.', true);
   }
 }
 
@@ -135,7 +145,6 @@ async function loadTodayServices() {
 
   loadingTodayServices.value = true;
   todayServicesError.value = '';
-  todayServicesMessage.value = '';
 
   try {
     const services = await apiRequest<Service[]>('/services');
@@ -181,7 +190,6 @@ onMounted(async () => {
       </div>
 
       <p v-if="loadingTodayServices" class="muted">Cargando servicios del dia...</p>
-      <p v-else-if="todayServicesMessage" class="alert success">{{ todayServicesMessage }}</p>
       <p v-else-if="todayServicesError" class="alert error">{{ todayServicesError }}</p>
       <p v-else-if="todayServices.length === 0" class="muted">No hay servicios programados para hoy.</p>
 
@@ -190,7 +198,7 @@ onMounted(async () => {
           v-for="service in todayServices"
           :key="service.id"
           class="today-service-row"
-          :to="`/services/${service.id}/edit`"
+          :to="{ path: `/services/${service.id}/edit`, query: { returnTo: '/' } }"
         >
           <div class="today-service-time">
             <strong>{{ serviceTime(service.hourStart) }}</strong>
@@ -206,7 +214,7 @@ onMounted(async () => {
                   type="button"
                   title="Copiar código"
                   aria-label="Copiar código"
-                  @click.prevent="copyServiceCode(service)"
+                  @click.prevent.stop="copyServiceCode(service)"
                 >
                   <Copy :size="15" />
                 </button>
@@ -242,5 +250,24 @@ onMounted(async () => {
         <h2>Operación</h2>
       </div>
     </section>
+
+    <div v-if="copyModalOpen" class="modal-backdrop" role="presentation" @click.self="closeCopyModal">
+      <section class="modal-panel copy-code-modal" role="dialog" aria-modal="true" aria-labelledby="copy-code-modal-title">
+        <div class="modal-header">
+          <div>
+            <h2 id="copy-code-modal-title">Código del servicio</h2>
+          </div>
+          <button class="icon-button" type="button" title="Cerrar" aria-label="Cerrar" @click="closeCopyModal">
+            <X :size="18" />
+          </button>
+        </div>
+
+        <p class="alert" :class="copyModalError ? 'error' : 'success'">{{ copyModalMessage }}</p>
+
+        <div class="form-actions">
+          <button class="primary-button" type="button" @click="closeCopyModal">Aceptar</button>
+        </div>
+      </section>
+    </div>
   </AppShell>
 </template>
