@@ -401,6 +401,12 @@ function serviceUserLabel(user: Record<string, unknown>) {
   return [fullName || user.username, user.email].filter(Boolean).join(' - ') || String(user.id);
 }
 
+function isMasterUserOption(user: Record<string, unknown>) {
+  const role = user.role as { name?: unknown } | null | undefined;
+
+  return String(role?.name || '').trim().toLowerCase() === 'master';
+}
+
 async function loadCustomerOptions() {
   customerOptions.value = [];
   customerSearch.value = '';
@@ -442,7 +448,7 @@ async function loadServiceUserOptions() {
     ]);
     const usersById = new Map<number, Record<string, unknown>>();
 
-    [...serviceUsers, ...allUsers].forEach((user) => {
+    [...serviceUsers, ...allUsers].filter((user) => !isMasterUserOption(user)).forEach((user) => {
       const id = Number(user.id);
 
       if (Number.isFinite(id)) {
