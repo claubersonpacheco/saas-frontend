@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { ChevronLeft, ChevronRight, ClipboardList, Copy, Edit3, MapPin, Plus, RefreshCw, Save, Trash2, X } from '@lucide/vue';
 import { computed, onMounted, reactive, ref, watch } from 'vue';
-import { apiRequest } from '../services/api';
-import { canGenerateCode, generateCode } from '../services/codeGenerator';
-import { getValue, type ResourceConfig, type ResourceField } from '../resources';
+import { apiRequest } from '@/services/api';
+import { canGenerateCode, generateCode } from '@/services/codeGenerator';
+import { getValue, type ResourceConfig, type ResourceField } from '@/resources';
 
 const props = defineProps<{
   config: ResourceConfig;

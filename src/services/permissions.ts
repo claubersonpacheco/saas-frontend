@@ -1,4 +1,4 @@
-import { authState } from '../stores/auth';
+import { authState } from '@/stores/auth';
 
 export function isMaster(): boolean {
   return authState.user?.role?.name.toLowerCase() === 'master';

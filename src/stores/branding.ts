@@ -1,5 +1,5 @@
 import { reactive } from 'vue';
-import { apiRequest } from '../services/api';
+import { apiRequest } from '@/services/api';
 import { authState } from './auth';
 
 type Branding = {
@@ -16,6 +16,12 @@ export const brandingState = reactive<BrandingState>({
   logo: null,
   loading: false,
 });
+
+export function resetBranding() {
+  brandingState.name = 'MiControl';
+  brandingState.logo = null;
+  brandingState.loading = false;
+}
 
 function applyBranding(branding?: Partial<Branding> | null) {
   brandingState.name = branding?.name || authState.user?.tenant?.name || 'MiControl';
@@ -48,7 +54,7 @@ export async function loadPublicBranding(tenantSlug: string) {
   const slug = tenantSlug.trim();
 
   if (!slug) {
-    applyBranding(null);
+    resetBranding();
     return;
   }
 

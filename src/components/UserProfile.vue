@@ -51,8 +51,8 @@
 <script setup lang="ts">
 import { Camera, LoaderCircle, Trash2 } from '@lucide/vue';
 import { computed, onBeforeUnmount, ref } from 'vue';
-import { apiRequest } from '../services/api';
-import type { User } from '../types';
+import { apiRequest } from '@/services/api';
+import type { User } from '@/types';
 
 const props = defineProps({
   user: {
