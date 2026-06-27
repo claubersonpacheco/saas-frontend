@@ -194,10 +194,10 @@ img.profile-photo-img {
 .profile-photo-initials {
   display: grid;
   place-items: center;
-  color: #0f3d31;
+  color: #00336F;
   font-size: 38px;
   font-weight: 750;
-  background: linear-gradient(135deg, #e8f5ef, #f6faf8);
+  background: linear-gradient(135deg, #EAF2FF, #f6faf8);
 }
 
 .profile-photo-actions {
@@ -227,7 +227,7 @@ img.profile-photo-img {
   display: grid;
   place-items: center;
   border-radius: 50%;
-  color: #0c7c59;
+  color: #0059C7;
 }
 
 .spin {

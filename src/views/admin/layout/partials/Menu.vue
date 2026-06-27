@@ -104,12 +104,19 @@ const visibleMenuGroups = computed(() =>
 <template>
   <div class="relative flex flex-col h-full max-h-full">
     <div class="px-6 pt-4 flex items-center">
-      <RouterLink class="flex-none rounded-xl text-xl inline-flex items-center gap-x-2 font-semibold focus:outline-hidden focus:opacity-80" to="/" aria-label="MiControl">
-        <span class="app-brand-mark size-9 rounded-xl">
+      <RouterLink
+        class="flex-none rounded-xl text-xl inline-flex items-center gap-x-2 font-semibold focus:outline-hidden focus:opacity-80"
+        to="/"
+        aria-label="MiControl"
+      >
+        <span
+          class="app-brand-mark rounded-xl"
+          :class="brandingState.logo ? 'h-10 w-40 bg-transparent' : 'size-9'"
+        >
           <img v-if="brandingState.logo" :src="brandingState.logo" :alt="brandingState.name" />
           <span v-else>M</span>
         </span>
-        <span class="text-gray-900 dark:text-neutral-100">{{ brandingState.name }}</span>
+        <span v-if="!brandingState.logo" class="text-gray-900 dark:text-neutral-100">{{ brandingState.name }}</span>
       </RouterLink>
     </div>
 

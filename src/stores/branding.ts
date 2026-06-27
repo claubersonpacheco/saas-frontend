@@ -41,7 +41,7 @@ export async function loadAuthenticatedBranding() {
     const setting = settings[0] || {};
     applyBranding({
       name: String(setting.name || authState.user?.tenant?.name || 'MiControl'),
-      logo: String(setting.logoIcon || setting.logo || setting.logoWhite || '') || null,
+      logo: String(setting.logo || setting.logoIcon || setting.logoWhite || '') || null,
     });
   } catch {
     applyBranding(null);
