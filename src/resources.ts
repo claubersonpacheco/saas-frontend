@@ -113,6 +113,23 @@ function formatDate(value: unknown): string {
   return year && month && day ? `${day}/${month}/${year}` : date;
 }
 
+export function getServiceMapAddress(item: Record<string, unknown>): string {
+  const street = [addressTypeLabel(item.addressType), item.address]
+    .filter((part) => part != null && String(part).trim() !== '')
+    .map(String)
+    .join(' ');
+
+  const parts = [
+    street,
+    item.number,
+    item.city,
+    item.state,
+    item.postal,
+  ].filter((part) => part != null && String(part).trim() !== '');
+
+  return parts.length ? parts.map(String).join(', ') : '-';
+}
+
 export const resources: Record<string, ResourceConfig> = {
   users: {
     key: 'users',
