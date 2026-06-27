@@ -50,6 +50,7 @@ import PlansCreatePage from '@/views/admin/pages/plans/create.vue';
 import PlansEditPage from '@/views/admin/pages/plans/edit.vue';
 import PlansIndexPage from '@/views/admin/pages/plans/index.vue';
 import ProfilePage from '@/views/admin/pages/profile/index.vue';
+import PasswordPage from '@/views/admin/pages/profile/password.vue';
 import RolesCreatePage from '@/views/admin/pages/roles/create.vue';
 import RolesEditPage from '@/views/admin/pages/roles/edit.vue';
 import RolesIndexPage from '@/views/admin/pages/roles/index.vue';
@@ -78,6 +79,7 @@ export const router = createRouter({
     { path: '/login', name: 'login', component: LoginPage, meta: { public: true } },
     { path: '/', name: 'dashboard', component: DashboardPage },
     { path: '/perfil', name: 'profile', component: ProfilePage },
+    { path: '/perfil/password', name: 'password', component: PasswordPage },
     { path: '/global-settings/bunny', name: 'global-settings-bunny', component: BunnyGlobalSettingsPage, meta: { masterOnly: true } },
     { path: '/users', name: 'users-index', component: UsersIndexPage, meta: { permission: 'users.read', module: 'users' } },
     { path: '/users/create', name: 'user-create', component: UsersCreatePage, meta: { permission: 'users.create', module: 'users' } },

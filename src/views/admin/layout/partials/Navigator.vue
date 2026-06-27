@@ -2,6 +2,7 @@
 import {
   Activity,
   Bell,
+  Lock,
   LogOut,
   Search,
   User,
@@ -119,6 +120,13 @@ function logout() {
                 >
                   <User class="shrink-0 size-4" />
                   Perfil
+                </RouterLink>
+                <RouterLink
+                  class="flex items-center gap-x-3.5 py-2 px-3 rounded-lg text-sm text-gray-800 dark:text-neutral-200 hover:bg-gray-100 dark:hover:bg-neutral-800 disabled:opacity-50 disabled:pointer-events-none focus:outline-hidden focus:bg-gray-100 dark:focus:bg-neutral-800"
+                  to="/perfil/password"
+                >
+                  <Lock class="shrink-0 size-4" />
+                  Seguridad
                 </RouterLink>
                 <button
                   type="button"
