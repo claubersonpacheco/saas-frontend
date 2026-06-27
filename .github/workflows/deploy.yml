@@ -25,6 +25,6 @@ jobs:
       - name: Build & Push Frontend
         run: |
           docker build \
-            --build-arg VITE_API_URL=https://api.micontrol.es \
+            --build-arg VITE_API_URL=https://api.organizarte.es \
             -t ghcr.io/claubersonpacheco/saas-frontend:latest .
           docker push ghcr.io/claubersonpacheco/saas-frontend:latest
