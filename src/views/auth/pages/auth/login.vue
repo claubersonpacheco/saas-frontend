@@ -4,10 +4,11 @@ import { onMounted, reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { apiRequest } from '@/services/api';
 import { authState, setSession } from '@/stores/auth';
-import { brandingState, resetBranding } from '@/stores/branding';
+import { brandingState, loadPublicBranding } from '@/stores/branding';
 import type { User } from '@/types';
 
 const router = useRouter();
+const tenantSlug = import.meta.env.VITE_TENANT_SLUG || 'organizarte';
 const loading = ref(false);
 const error = ref('');
 const showPassword = ref(false);
@@ -41,7 +42,7 @@ async function submit() {
 
 onMounted(() => {
   if (!authState.accessToken) {
-    resetBranding();
+    loadPublicBranding(tenantSlug);
   }
 });
 </script>
@@ -50,7 +51,7 @@ onMounted(() => {
   <main class="login-screen">
     <section class="login-panel">
       <div class="login-brand">
-        <span class="brand-mark">
+        <span class="brand-mark" :class="{ 'brand-mark-fallback': !brandingState.logo }">
           <img v-if="brandingState.logo" :src="brandingState.logo" :alt="brandingState.name" />
           <span v-else>M</span>
         </span>

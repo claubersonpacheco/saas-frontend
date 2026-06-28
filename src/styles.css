@@ -83,6 +83,12 @@ code {
   padding: 4px;
 }
 
+.brand-mark-fallback,
+.app-brand-mark:not(:has(img)) {
+  background: #0059C7;
+  color: #ffffff;
+}
+
 .app-brand-mark {
   display: inline-grid;
   flex: 0 0 auto;
