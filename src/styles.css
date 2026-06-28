@@ -76,7 +76,7 @@ code {
   height: 42px;
   flex: 0 0 auto;
   place-items: center;
-  border-radius: 8px;
+  border-radius: 50%;
   background: transparent;
   color: #0059C7;
   font-weight: 800;
@@ -88,10 +88,20 @@ code {
   flex: 0 0 auto;
   place-items: center;
   overflow: hidden;
+  border-radius: 50%;
   background: transparent;
   color: #0059C7;
   font-weight: 800;
   padding: 4px;
+}
+
+.app-brand-name {
+  display: block;
+  min-width: 0;
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .brand-mark img,

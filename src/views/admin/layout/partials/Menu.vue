@@ -116,7 +116,7 @@ const visibleMenuGroups = computed(() =>
           <img v-if="brandingState.logo" :src="brandingState.logo" :alt="brandingState.name" />
           <span v-else>M</span>
         </span>
-        <span v-if="!brandingState.logo" class="text-gray-900 dark:text-neutral-100">{{ brandingState.name }}</span>
+        <span v-if="!brandingState.logo" class="app-brand-name text-gray-900 dark:text-neutral-100">{{ brandingState.name }}</span>
       </RouterLink>
     </div>
 

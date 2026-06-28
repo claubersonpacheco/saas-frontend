@@ -40,7 +40,7 @@ function logout() {
             <img v-if="brandingState.logo" :src="brandingState.logo" :alt="brandingState.name" />
             <span v-else>M</span>
           </span>
-          <span class="text-gray-900 dark:text-neutral-100">{{ brandingState.name }}</span>
+          <span class="app-brand-name text-gray-900 dark:text-neutral-100">{{ brandingState.name }}</span>
         </RouterLink>
       </div>
 
