@@ -670,7 +670,6 @@ export function getValue(item: Record<string, unknown>, key: string): string {
     const parts = [
       street,
       item.number,
-      item.complement,
       item.city,
       item.state,
       item.postal,

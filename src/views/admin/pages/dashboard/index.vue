@@ -2,7 +2,7 @@
 import { Activity, Building2, CalendarDays, ClipboardList, Copy, CreditCard, MapPin, ShieldCheck, UsersRound, X } from '@lucide/vue';
 import { computed, onMounted, ref } from 'vue';
 import AdminLayout from '@/views/admin/layout/AdminLayout.vue';
-import { getValue } from '@/resources';
+import { getServiceMapAddress, getValue } from '@/resources';
 import { apiRequest } from '@/services/api';
 import { hasPermission, hasPlanModule } from '@/services/permissions';
 import { authState } from '@/stores/auth';
@@ -85,7 +85,7 @@ function serviceAddress(service: Service): string {
 }
 
 function serviceMapsUrl(service: Service): string {
-  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(serviceAddress(service))}`;
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(getServiceMapAddress(service as unknown as Record<string, unknown>))}`;
 }
 
 function serviceResponsible(service: Service): string {

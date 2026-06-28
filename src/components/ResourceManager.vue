@@ -3,7 +3,7 @@ import { ChevronLeft, ChevronRight, ClipboardList, Copy, Edit3, MapPin, Plus, Re
 import { computed, onMounted, reactive, ref, watch } from 'vue';
 import { apiRequest } from '@/services/api';
 import { canGenerateCode, generateCode } from '@/services/codeGenerator';
-import { getValue, type ResourceConfig, type ResourceField } from '@/resources';
+import { getServiceMapAddress, getValue, type ResourceConfig, type ResourceField } from '@/resources';
 
 const props = defineProps<{
   config: ResourceConfig;
@@ -219,7 +219,7 @@ function serviceAddress(item: Record<string, unknown>) {
 }
 
 function serviceMapsUrl(item: Record<string, unknown>) {
-  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(serviceAddress(item))}`;
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(getServiceMapAddress(item))}`;
 }
 
 async function copyServiceCode(item: Record<string, unknown>) {
