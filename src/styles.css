@@ -77,9 +77,10 @@ code {
   flex: 0 0 auto;
   place-items: center;
   border-radius: 8px;
-  background: #0059C7;
-  color: #fff;
+  background: transparent;
+  color: #0059C7;
   font-weight: 800;
+  padding: 4px;
 }
 
 .app-brand-mark {
@@ -87,9 +88,10 @@ code {
   flex: 0 0 auto;
   place-items: center;
   overflow: hidden;
-  background: #0059C7;
-  color: #fff;
+  background: transparent;
+  color: #0059C7;
   font-weight: 800;
+  padding: 4px;
 }
 
 .brand-mark img,
@@ -97,9 +99,11 @@ code {
   display: block;
   width: 100%;
   height: 100%;
+  min-width: 0;
+  min-height: 0;
+  max-width: 100%;
+  max-height: 100%;
   object-fit: contain;
-  background: #fff;
-  padding: 4px;
 }
 
 .brand strong,
@@ -696,6 +700,7 @@ td {
   height: 42px;
   max-width: none !important;
   place-items: center;
+  overflow: hidden;
   border: 1px solid #dfe7e2;
   border-radius: 8px;
   background:
@@ -715,6 +720,10 @@ td {
 
 .resource-table-logo img {
   display: block;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
   max-width: 100%;
   max-height: 100%;
   object-fit: contain;
@@ -1053,8 +1062,10 @@ td {
   display: grid;
   grid-column: 1 / -1;
   width: 180px;
+  max-width: 100%;
   height: 96px;
   place-items: center;
+  overflow: hidden;
   border: 1px solid #dfe7e2;
   border-radius: 8px;
   background:
@@ -1074,6 +1085,10 @@ td {
 
 .logo-preview-box img {
   display: block;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
   max-width: 100%;
   max-height: 100%;
   object-fit: contain;
