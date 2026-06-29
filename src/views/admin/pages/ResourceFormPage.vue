@@ -65,7 +65,7 @@ const settingsTabs = [
     fields: ['name', 'prefix', 'logo', 'logoIcon', 'logoPrint', 'logoWhite'],
   },
 ];
-const CURRENT_DATE_FIELD_KEYS = new Set(['date', 'dateStart', 'fechaEmision']);
+const CURRENT_DATE_FIELD_KEYS = new Set(['date', 'dateStart', 'dateEnd', 'fechaEmision']);
 const isSettingsForm = computed(() => config.value.key === 'settings');
 const settingsFieldsByTab = computed(() =>
   settingsTabs.map((tab) => ({
@@ -355,7 +355,19 @@ function selectCustomerFromEvent(event: Event) {
 }
 
 function updateText(key: string, event: Event) {
+  const previousDateStart = form.dateStart;
+
   form[key] = (event.target as HTMLInputElement | HTMLTextAreaElement).value;
+
+  if (
+    config.value.key === 'services' &&
+    key === 'dateStart' &&
+    !isEditing.value &&
+    (!form.dateEnd || form.dateEnd === previousDateStart)
+  ) {
+    form.dateEnd = form.dateStart;
+  }
+
   updateBudgetExpiration(key);
 }
 

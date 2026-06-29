@@ -183,7 +183,7 @@ onMounted(async () => {
       <div class="panel-title">
         <CalendarDays :size="20" />
         <h2>Servicios de hoy</h2>
-        <RouterLink v-if="canCreateServices" class="primary-button compact-button" to="/services/create">
+        <RouterLink v-if="canCreateServices" class="primary-button compact-button" :to="{ path: '/services/create', query: { returnTo: '/' } }">
           Crear servicio
         </RouterLink>
         <RouterLink class="secondary-button compact-button" to="/services">Ver todos</RouterLink>
