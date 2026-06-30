@@ -80,6 +80,28 @@ function serviceStatus(service: Service): string {
   return getValue(service as unknown as Record<string, unknown>, 'status') || '-';
 }
 
+function serviceStatusClass(service: Service): string {
+  const status = Number(service.status);
+
+  if (status === 3) {
+    return 'visited';
+  }
+
+  if (status === 2) {
+    return 'open';
+  }
+
+  if (status === 1) {
+    return 'process';
+  }
+
+  if (status === 0) {
+    return 'closed';
+  }
+
+  return 'unknown';
+}
+
 function serviceAddress(service: Service): string {
   return getValue(service as unknown as Record<string, unknown>, 'fullAddress');
 }
@@ -219,7 +241,12 @@ onMounted(async () => {
                   <Copy :size="15" />
                 </button>
               </span>
-              <span>{{ serviceStatus(service) }}</span>
+              <span
+                class="service-status-badge"
+                :class="`service-status-badge-${serviceStatusClass(service)}`"
+              >
+                {{ serviceStatus(service) }}
+              </span>
             </div>
             <a
               v-if="serviceAddress(service) !== '-'"

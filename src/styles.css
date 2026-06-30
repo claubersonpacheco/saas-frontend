@@ -373,6 +373,10 @@ code {
   font-weight: 800;
 }
 
+.today-service-heading .service-status-badge {
+  display: inline-flex;
+}
+
 .today-service-main p {
   display: flex;
   min-width: 0;
@@ -786,6 +790,51 @@ td {
 .service-code-cell span {
   color: #172126 !important;
   font-weight: 700;
+}
+
+.service-status-badge {
+  display: inline-flex !important;
+  width: fit-content;
+  max-width: none !important;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  padding: 5px 10px;
+  font-size: 12px !important;
+  font-weight: 800;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.service-status-badge-open {
+  border-color: #b9ead1;
+  background: #e7f8ef !important;
+  color: #11643a !important;
+}
+
+.service-status-badge-closed {
+  border-color: #d5dce0;
+  background: #eef2f4 !important;
+  color: #40515b !important;
+}
+
+.service-status-badge-visited {
+  border-color: #d6c6f7;
+  background: #f1ebff !important;
+  color: #5b2db3 !important;
+}
+
+.service-status-badge-process {
+  border-color: #f6d58d;
+  background: #fff5db !important;
+  color: #8a5700 !important;
+}
+
+.service-status-badge-unknown {
+  border-color: #dfe7e2;
+  background: #f7faf8 !important;
+  color: #687873 !important;
 }
 
 .service-map-link {

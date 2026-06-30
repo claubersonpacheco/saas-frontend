@@ -210,8 +210,34 @@ function isServiceAddressColumn(column: string) {
   return props.config.key === 'services' && column === 'fullAddress';
 }
 
+function isServiceStatusColumn(column: string) {
+  return props.config.key === 'services' && column === 'status';
+}
+
 function serviceCode(item: Record<string, unknown>) {
   return String(item.code || '');
+}
+
+function serviceStatusClass(item: Record<string, unknown>) {
+  const status = Number(item.status);
+
+  if (status === 3) {
+    return 'visited';
+  }
+
+  if (status === 2) {
+    return 'open';
+  }
+
+  if (status === 1) {
+    return 'process';
+  }
+
+  if (status === 0) {
+    return 'closed';
+  }
+
+  return 'unknown';
 }
 
 function serviceAddress(item: Record<string, unknown>) {
@@ -773,6 +799,13 @@ onMounted(async () => {
                       >
                         <Copy :size="15" />
                       </button>
+                    </span>
+                    <span
+                      v-else-if="isServiceStatusColumn(column)"
+                      class="service-status-badge"
+                      :class="`service-status-badge-${serviceStatusClass(item)}`"
+                    >
+                      {{ getValue(item, column) }}
                     </span>
                     <a
                       v-else-if="isServiceAddressColumn(column) && serviceAddress(item) !== '-'"
