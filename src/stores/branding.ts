@@ -12,20 +12,33 @@ type BrandingState = Branding & {
 };
 
 export const brandingState = reactive<BrandingState>({
-  name: 'MiControl',
+  name: 'Organizarte',
   logo: null,
   loading: false,
 });
 
+let currentPageTitle: string | null = null;
+
+export function setDocumentTitle(pageTitle?: string | null) {
+  if (arguments.length > 0) {
+    currentPageTitle = pageTitle || null;
+  }
+
+  const brandName = brandingState.name || 'Organizarte';
+  document.title = currentPageTitle ? `${currentPageTitle} | ${brandName}` : brandName;
+}
+
 export function resetBranding() {
-  brandingState.name = 'MiControl';
+  brandingState.name = 'Organizarte';
   brandingState.logo = null;
   brandingState.loading = false;
+  setDocumentTitle();
 }
 
 function applyBranding(branding?: Partial<Branding> | null) {
-  brandingState.name = branding?.name || authState.user?.tenant?.name || 'MiControl';
+  brandingState.name = branding?.name || authState.user?.tenant?.name || 'Organizarte';
   brandingState.logo = branding?.logo || null;
+  setDocumentTitle();
 }
 
 export async function loadAuthenticatedBranding() {
@@ -40,7 +53,7 @@ export async function loadAuthenticatedBranding() {
     const settings = await apiRequest<Array<Record<string, unknown>>>('/settings');
     const setting = settings[0] || {};
     applyBranding({
-      name: String(setting.name || authState.user?.tenant?.name || 'MiControl'),
+      name: String(setting.name || authState.user?.tenant?.name || 'Organizarte'),
       logo: String(setting.logo || setting.logoIcon || setting.logoWhite || '') || null,
     });
   } catch {
@@ -63,7 +76,7 @@ export async function loadPublicBranding(tenantSlug: string) {
   try {
     const branding = await apiRequest<Record<string, unknown>>(`/settings/branding/${encodeURIComponent(slug)}`);
     applyBranding({
-      name: String(branding.name || 'MiControl'),
+      name: String(branding.name || 'Organizarte'),
       logo: String(branding.logo || branding.logoIcon || branding.logoWhite || '') || null,
     });
   } catch {

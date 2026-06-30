@@ -76,11 +76,11 @@ import UsersIndexPage from '@/views/admin/pages/users/index.vue';
 export const router = createRouter({
   history: createWebHistory(),
   routes: [
-    { path: '/login', name: 'login', component: LoginPage, meta: { public: true } },
-    { path: '/', name: 'dashboard', component: DashboardPage },
-    { path: '/perfil', name: 'profile', component: ProfilePage },
-    { path: '/perfil/password', name: 'password', component: PasswordPage },
-    { path: '/global-settings/bunny', name: 'global-settings-bunny', component: BunnyGlobalSettingsPage, meta: { masterOnly: true } },
+    { path: '/login', name: 'login', component: LoginPage, meta: { public: true, title: 'Entrar' } },
+    { path: '/', name: 'dashboard', component: DashboardPage, meta: { title: 'Panel' } },
+    { path: '/perfil', name: 'profile', component: ProfilePage, meta: { title: 'Perfil' } },
+    { path: '/perfil/password', name: 'password', component: PasswordPage, meta: { title: 'Contraseña' } },
+    { path: '/global-settings/bunny', name: 'global-settings-bunny', component: BunnyGlobalSettingsPage, meta: { masterOnly: true, title: 'Bunny' } },
     { path: '/users', name: 'users-index', component: UsersIndexPage, meta: { permission: 'users.read', module: 'users' } },
     { path: '/users/create', name: 'user-create', component: UsersCreatePage, meta: { permission: 'users.create', module: 'users' } },
     { path: '/users/:id/edit', name: 'user-edit', component: UsersEditPage, meta: { permission: 'users.update', module: 'users' } },
