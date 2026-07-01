@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import ResourceFormPage from '../ResourceFormPage.vue';
+import SettingsFormPage from './SettingsFormPage.vue';
 </script>
 
 <template>
-  <ResourceFormPage resource-key="settings" />
+  <SettingsFormPage />
 </template>
+

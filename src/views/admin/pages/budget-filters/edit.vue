@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import ResourceFormPage from '../ResourceFormPage.vue';
+import BudgetFiltersFormPage from './BudgetFiltersFormPage.vue';
 </script>
 
 <template>
-  <ResourceFormPage resource-key="budgetFilters" />
+  <BudgetFiltersFormPage />
 </template>
+

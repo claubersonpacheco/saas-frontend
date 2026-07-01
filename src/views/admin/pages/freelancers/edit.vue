@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import ResourceFormPage from '../ResourceFormPage.vue';
+import FreelancersFormPage from './FreelancersFormPage.vue';
 </script>
 
 <template>
-  <ResourceFormPage resource-key="freelancers" />
+  <FreelancersFormPage />
 </template>
+

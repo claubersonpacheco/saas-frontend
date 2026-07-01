@@ -9,9 +9,7 @@ import { hasPermission } from '@/services/permissions';
 import { resources, type ResourceField } from '@/resources';
 import type { Plan, User } from '@/types';
 
-const props = defineProps<{
-  resourceKey: string;
-}>();
+const RESOURCE_KEY = 'budgetTotals';
 
 const route = useRoute();
 const router = useRouter();
@@ -44,7 +42,7 @@ const selectedLogoFiles = reactive<Record<string, File | null>>({
 });
 const selectedLogoPreviewUrls = reactive<Record<string, string>>({});
 
-const config = computed(() => resources[props.resourceKey]);
+const config = computed(() => resources[RESOURCE_KEY]);
 const recordId = computed(() => String(route.params.id || ''));
 const isEditing = computed(() => Boolean(recordId.value));
 const title = computed(() => `${isEditing.value ? 'Editar' : 'Nuevo'} ${config.value.title.toLowerCase()}`);
@@ -889,3 +887,4 @@ onBeforeUnmount(() => {
     </div>
   </AdminLayout>
 </template>
+

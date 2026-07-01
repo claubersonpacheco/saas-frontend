@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import ResourceFormPage from '../ResourceFormPage.vue';
+import PlansFormPage from './PlansFormPage.vue';
 </script>
 
 <template>
-  <ResourceFormPage resource-key="plans" />
+  <PlansFormPage />
 </template>
+

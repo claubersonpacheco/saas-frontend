@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import ResourceFormPage from '../ResourceFormPage.vue';
+import PermissionsFormPage from './PermissionsFormPage.vue';
 </script>
 
 <template>
-  <ResourceFormPage resource-key="permissions" />
+  <PermissionsFormPage />
 </template>
+

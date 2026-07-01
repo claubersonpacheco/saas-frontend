@@ -53,7 +53,7 @@ onMounted(() => {
       <div class="login-brand">
         <span class="brand-mark" :class="{ 'brand-mark-fallback': !brandingState.logo }">
           <img v-if="brandingState.logo" :src="brandingState.logo" :alt="brandingState.name" />
-          <span v-else>M</span>
+          <span v-else>OA</span>
         </span>
         <div>
           <p class="eyebrow">{{ brandingState.name }}</p>
