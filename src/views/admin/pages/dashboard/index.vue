@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Activity, Building2, CalendarDays, ClipboardList, Copy, CreditCard, MapPin, ShieldCheck, UsersRound, X } from '@lucide/vue';
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, onUnmounted, ref } from 'vue';
 import AdminLayout from '@/views/admin/layout/AdminLayout.vue';
 import { getServiceMapAddress, getValue } from '@/resources';
 import { apiRequest } from '@/services/api';
@@ -14,6 +14,7 @@ const todayServicesError = ref('');
 const copyModalOpen = ref(false);
 const copyModalMessage = ref('');
 const copyModalError = ref(false);
+let copyModalTimer: ReturnType<typeof setTimeout> | null = null;
 const todayServices = ref<Service[]>([]);
 const counts = ref([
   { label: 'Usuarios', value: '-', icon: UsersRound, path: '/users', resource: 'users', permission: 'users.read' },
@@ -115,12 +116,24 @@ function serviceResponsible(service: Service): string {
 }
 
 function showCopyModal(message: string, isError = false) {
+  if (copyModalTimer) {
+    clearTimeout(copyModalTimer);
+  }
+
   copyModalMessage.value = message;
   copyModalError.value = isError;
   copyModalOpen.value = true;
+  copyModalTimer = setTimeout(() => {
+    closeCopyModal();
+  }, 2000);
 }
 
 function closeCopyModal() {
+  if (copyModalTimer) {
+    clearTimeout(copyModalTimer);
+    copyModalTimer = null;
+  }
+
   copyModalOpen.value = false;
 }
 
@@ -186,6 +199,12 @@ async function loadTodayServices() {
 
 onMounted(async () => {
   await Promise.all([loadCounts(), loadTodayServices()]);
+});
+
+onUnmounted(() => {
+  if (copyModalTimer) {
+    clearTimeout(copyModalTimer);
+  }
 });
 </script>
 
@@ -291,9 +310,6 @@ onMounted(async () => {
 
         <p class="alert" :class="copyModalError ? 'error' : 'success'">{{ copyModalMessage }}</p>
 
-        <div class="form-actions">
-          <button class="primary-button" type="button" @click="closeCopyModal">Aceptar</button>
-        </div>
       </section>
     </div>
   </AdminLayout>
