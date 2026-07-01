@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ChevronLeft, ChevronRight, ClipboardList, Copy, Edit3, MapPin, Plus, RefreshCw, Save, Trash2, X } from '@lucide/vue';
-import { computed, onMounted, reactive, ref, watch } from 'vue';
+import { computed, onMounted, onUnmounted, reactive, ref, watch } from 'vue';
 import { apiRequest } from '@/services/api';
 import { canGenerateCode, generateCode } from '@/services/codeGenerator';
 import { getServiceMapAddress, getValue, type ResourceConfig, type ResourceField } from '@/resources';
@@ -19,6 +19,9 @@ const loading = ref(false);
 const saving = ref(false);
 const error = ref('');
 const message = ref('');
+const copyModalOpen = ref(false);
+const copyModalMessage = ref('');
+const copyModalError = ref(false);
 const editing = ref<Record<string, unknown> | null>(null);
 const form = reactive<Record<string, unknown>>({});
 const page = ref(1);
@@ -31,6 +34,7 @@ const productTypeFilter = ref('');
 const productCategoryFilter = ref('');
 const codePrefix = ref('FS');
 const categoryOptions = ref<Array<{ value: number; label: string }>>([]);
+let copyModalTimer: ReturnType<typeof setTimeout> | null = null;
 
 const months = [
   { value: '01', label: 'Enero' },
@@ -248,6 +252,28 @@ function serviceMapsUrl(item: Record<string, unknown>) {
   return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(getServiceMapAddress(item))}`;
 }
 
+function showCopyModal(value: string, isError = false) {
+  if (copyModalTimer) {
+    clearTimeout(copyModalTimer);
+  }
+
+  copyModalMessage.value = value;
+  copyModalError.value = isError;
+  copyModalOpen.value = true;
+  copyModalTimer = setTimeout(() => {
+    closeCopyModal();
+  }, 2000);
+}
+
+function closeCopyModal() {
+  if (copyModalTimer) {
+    clearTimeout(copyModalTimer);
+    copyModalTimer = null;
+  }
+
+  copyModalOpen.value = false;
+}
+
 async function copyServiceCode(item: Record<string, unknown>) {
   const code = serviceCode(item);
 
@@ -257,10 +283,9 @@ async function copyServiceCode(item: Record<string, unknown>) {
 
   try {
     await navigator.clipboard.writeText(code);
-    message.value = 'Código del servicio copiado.';
-    error.value = '';
+    showCopyModal('Código del servicio copiado.');
   } catch {
-    error.value = 'No se pudo copiar el código.';
+    showCopyModal('No se pudo copiar el código.', true);
   }
 }
 
@@ -621,6 +646,12 @@ onMounted(async () => {
   resetForm();
   load();
 });
+
+onUnmounted(() => {
+  if (copyModalTimer) {
+    clearTimeout(copyModalTimer);
+  }
+});
 </script>
 
 <template>
@@ -961,5 +992,20 @@ onMounted(async () => {
         </div>
       </form>
     </aside>
+
+    <div v-if="copyModalOpen" class="modal-backdrop" role="presentation" @click.self="closeCopyModal">
+      <section class="modal-panel copy-code-modal" role="dialog" aria-modal="true" aria-labelledby="copy-code-modal-title">
+        <div class="modal-header">
+          <div>
+            <h2 id="copy-code-modal-title">Código del servicio</h2>
+          </div>
+          <button class="icon-button" type="button" title="Cerrar" aria-label="Cerrar" @click="closeCopyModal">
+            <X :size="18" />
+          </button>
+        </div>
+
+        <p class="alert" :class="copyModalError ? 'error' : 'success'">{{ copyModalMessage }}</p>
+      </section>
+    </div>
   </section>
 </template>
